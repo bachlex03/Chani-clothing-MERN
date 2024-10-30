@@ -8,29 +8,39 @@ const config: Config = {
       './src/app/**/*.{js,ts,jsx,tsx,mdx}',
    ],
    theme: {
-      container: {
-         center: true,
-         padding: '16px',
-         screens: {
-            sm: '640px',
-            md: '768px',
-            lg: '960px',
-            xl: '1200px',
-         },
-      },
-      fontFamily: {
-         primary: 'var(--font-roboto)',
-      },
-      extend: {
-         colors: {
-            primary: '#ccc',
-         },
-         borderRadius: {
-            lg: 'var(--radius)',
-            md: 'calc(var(--radius) - 2px)',
-            sm: 'calc(var(--radius) - 4px)',
-         },
-      },
+   	container: {
+   		center: 'true',
+   		padding: '16px',
+   		screens: {
+   			sm: '640px',
+   			md: '768px',
+   			lg: '960px',
+   			xl: '1200px'
+   		}
+   	},
+   	fontFamily: {
+   		primary: 'var(--font-roboto)'
+   	},
+   	extend: {
+   		colors: {
+   			primary: '#ccc',
+   			sidebar: {
+   				DEFAULT: 'hsl(var(--sidebar-background))',
+   				foreground: 'hsl(var(--sidebar-foreground))',
+   				primary: 'hsl(var(--sidebar-primary))',
+   				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+   				accent: 'hsl(var(--sidebar-accent))',
+   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+   				border: 'hsl(var(--sidebar-border))',
+   				ring: 'hsl(var(--sidebar-ring))'
+   			}
+   		},
+   		borderRadius: {
+   			lg: 'var(--radius)',
+   			md: 'calc(var(--radius) - 2px)',
+   			sm: 'calc(var(--radius) - 4px)'
+   		}
+   	}
    },
    plugins: [require('tailwindcss-animate')],
 };
