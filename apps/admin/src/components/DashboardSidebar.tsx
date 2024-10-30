@@ -14,11 +14,12 @@ import {
 import { DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Collapsible, CollapsibleTrigger } from '@radix-ui/react-collapsible';
 import { CollapsibleContent } from './ui/collapsible';
+import Link from 'next/link';
 
 const applicationItems = [
    {
       title: 'Dashboard',
-      url: '#',
+      url: '/dashboard',
       icon: '',
    },
 ];
@@ -26,7 +27,7 @@ const applicationItems = [
 const usuallyItems = [
    {
       title: 'Products',
-      url: '#',
+      url: '/products',
       icon: '',
    },
    {
@@ -90,10 +91,10 @@ export default function DashBoardSidebar() {
                      {usuallyItems.map((item) => (
                         <SidebarMenuItem key={item.title}>
                            <SidebarMenuButton asChild>
-                              <a href={item.url}>
+                              <Link href={item.url}>
                                  <i>icon</i>
                                  <span>{item.title}</span>
-                              </a>
+                              </Link>
                            </SidebarMenuButton>
                         </SidebarMenuItem>
                      ))}
