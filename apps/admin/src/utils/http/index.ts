@@ -2,7 +2,7 @@ import { IApiResponse } from '~/types/api-response.type';
 import { serializeUrl } from '../serializer';
 import { IHeaderOptions } from './header-options.interface';
 import { IBaseError } from '~/types/errors/base.error';
-import { ApiError } from '~/app/common/errors/Api.error';
+import { ApiError } from '~/common/errors/Api.error';
 const Cookies = require('js-cookie');
 
 const baseUrl = 'http://localhost:3001/api/v1/';

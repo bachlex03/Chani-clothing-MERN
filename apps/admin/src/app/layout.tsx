@@ -2,10 +2,6 @@ import type { Metadata } from 'next';
 import '~/styles/globals.css';
 import { Roboto } from 'next/font/google';
 import { ThemeProvider } from '~/components/themesProvider';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
-import { ThemeProvider as MUIThemeProvider } from '@mui/material/styles';
-import theme from '~/mui/theme';
-import { CssBaseline } from '@mui/material';
 import { Toaster } from '~/components/ui/toaster';
 
 const roboto = Roboto({
@@ -33,14 +29,7 @@ export default function RootLayout({
             />
          </head>
          <body className={`${roboto.variable} antialiased`}>
-            {/* <Toaster />
-            <ThemeProvider
-               attribute="class"
-               defaultTheme="dark"
-               enableSystem={false}
-               disableTransitionOnChange
-            >
-            </ThemeProvider> */}
+            <Toaster />
             <main>{children}</main>
          </body>
       </html>

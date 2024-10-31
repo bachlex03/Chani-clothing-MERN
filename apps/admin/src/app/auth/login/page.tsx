@@ -15,9 +15,14 @@ import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { authSchema } from '~/schemaValidations/authSchema';
 import * as authServices from '~/services/auth/login.services';
-import { ApiError } from '~/app/common/errors/Api.error';
+import { ApiError } from '~/common/errors/Api.error';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import { toast } from '~/hooks/use-toast';
 
 export default function Login() {
+   const router = useRouter();
+
    const form = useForm<z.infer<typeof authSchema>>({
       resolver: zodResolver(authSchema),
       defaultValues: {
@@ -29,19 +34,36 @@ export default function Login() {
    const onLogin = async (values: z.infer<typeof authSchema>) => {
       const result = await authServices.login(values);
 
-      console.log(result);
-
       if (result instanceof ApiError) {
          console.log(result.errorResponse);
+
+         toast({
+            variant: 'destructive',
+            title: `Account ${result.errorResponse?.message}`,
+            description: `There was a problem with your request. ${result.errorResponse?.code}`,
+         });
+
+         return;
       }
 
-      // Cookies.set('access-token', result.accessToken);
+      toast({
+         title: 'Login successful',
+         className: 'bg-[green] dark:bg-[green] text-white dark:text-white',
+      });
+
+      if (result.accessToken) {
+         Cookies.set('access-token', result.accessToken);
+
+         router.push('/dashboards');
+      }
    };
 
    return (
       <div className="container h-screen flex items-center">
          <div className="w-full p-[32px] rounded-xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]">
-            <h2 className="text-[42px] font-bold">Administrator login</h2>
+            <h2 className="text-[42px] font-bold dark:text-black">
+               Administrator login
+            </h2>
             <div>
                <Form {...form}>
                   <form onSubmit={form.handleSubmit(onLogin)} className="">

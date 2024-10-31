@@ -51,11 +51,11 @@ export default async function DashboardProducts() {
             <div className="flex justify-between pt-5">
                <Button>Add Product</Button>
 
-               <ProductDetails />
+               {/* <ProductDetails /> */}
             </div>
 
             <div className="mx-auto py-10">
-               <DataTable columns={columns} data={data} />
+               {/* <DataTable columns={columns} data={data} /> */}
             </div>
          </div>
       </div>

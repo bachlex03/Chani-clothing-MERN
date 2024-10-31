@@ -1,4 +1,4 @@
-import { ApiError } from '~/app/common/errors/Api.error';
+import { ApiError } from '~/common/errors/Api.error';
 import { ILoginPayload, ILoginResponse } from '~/types/auth/login.type';
 import { get, post } from '~/utils/http';
 

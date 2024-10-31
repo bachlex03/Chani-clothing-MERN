@@ -19,7 +19,7 @@ import Link from 'next/link';
 const applicationItems = [
    {
       title: 'Dashboard',
-      url: '/dashboard',
+      url: '/dashboards',
       icon: '',
    },
 ];
@@ -27,12 +27,12 @@ const applicationItems = [
 const usuallyItems = [
    {
       title: 'Products',
-      url: '/products',
+      url: '/dashboards/products',
       icon: '',
    },
    {
       title: 'Invoices',
-      url: '/invoices',
+      url: '/dashboards/invoices',
       icon: '',
    },
 ];
@@ -40,12 +40,12 @@ const usuallyItems = [
 const otherItems = [
    {
       title: 'Categories',
-      url: '/categories',
+      url: '/dashboards/categories',
       icon: '',
    },
    {
       title: 'Promotions',
-      url: '/promotions',
+      url: '/dashboards/promotions',
       icon: '',
    },
 ];
