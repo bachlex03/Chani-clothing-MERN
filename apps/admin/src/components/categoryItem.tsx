@@ -38,6 +38,8 @@ import {
    DialogTitle,
    DialogTrigger,
 } from './ui/dialog';
+import { ImageListItem } from '@mui/material';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 function not(a: readonly number[], b: readonly number[]) {
    return a.filter((value) => !b.includes(value));
@@ -54,6 +56,46 @@ function renderRow(props: ListChildComponentProps) {
       <ListItem style={style} key={index} component="div" disablePadding>
          <ListItemButton>
             <ListItemText primary={`Item ${index + 1}`} />
+
+            <Popover>
+               <PopoverTrigger>edit</PopoverTrigger>
+               <PopoverContent className="w-80">
+                  <div className="grid gap-4">
+                     <div className="space-y-2">
+                        <h4 className="font-medium leading-none">Name</h4>
+                        <p className="text-sm text-muted-foreground">
+                           Set/Edit category name and description.
+                        </p>
+                     </div>
+                     <div className="grid gap-2">
+                        <div className="grid grid-cols-3 items-center gap-4">
+                           <Label htmlFor="width">Name</Label>
+                           <Input
+                              id="width"
+                              defaultValue="100%"
+                              className="col-span-2 h-8"
+                           />
+                        </div>
+                        <div className="grid grid-cols-3 items-center gap-4">
+                           <Label htmlFor="maxWidth">Description</Label>
+                           <Input
+                              id="maxWidth"
+                              defaultValue="300px"
+                              className="col-span-2 h-8"
+                           />
+                        </div>
+                     </div>
+                     <div className="flex mt-5 ml-auto gap-5">
+                        <SButton className="" type="submit">
+                           Delete
+                        </SButton>
+                        <SButton className="" type="submit">
+                           Save changes
+                        </SButton>
+                     </div>
+                  </div>
+               </PopoverContent>
+            </Popover>
          </ListItemButton>
       </ListItem>
    );
