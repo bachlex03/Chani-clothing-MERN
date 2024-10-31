@@ -7,8 +7,8 @@ import ModeToggle from './modeToggle';
 
 export default function Header({ className = '' }) {
    return (
-      <div
-         className={`absolute flex items-center justify-end top-0 bg-[#162336] w-full h-[--header-height] ${className}`}
+      <header
+         className={`absolute flex items-center justify-end top-0 bg-[#162336] w-[-webkit-fill-available] h-[--header-height] ${className}`}
       >
          <div className="flex items-center gap-5 mr-10">
             <i className="text-2xl">
@@ -30,6 +30,6 @@ export default function Header({ className = '' }) {
                </Avatar>
             </div>
          </div>
-      </div>
+      </header>
    );
 }

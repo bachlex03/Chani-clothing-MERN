@@ -80,7 +80,7 @@ export default function DashBoardSidebar() {
             </Collapsible>
 
             <SidebarGroup>
-               <SidebarGroupLabel>Usually</SidebarGroupLabel>
+               <SidebarGroupLabel>Others</SidebarGroupLabel>
                <SidebarGroupContent>
                   <SidebarMenu>
                      {usuallyItems.map((item) => (
@@ -98,16 +98,16 @@ export default function DashBoardSidebar() {
             </SidebarGroup>
 
             <SidebarGroup>
-               <SidebarGroupLabel>Others</SidebarGroupLabel>
+               <SidebarGroupLabel>Usually</SidebarGroupLabel>
                <SidebarGroupContent>
                   <SidebarMenu>
                      {otherItems.map((item) => (
                         <SidebarMenuItem key={item.title}>
                            <SidebarMenuButton asChild>
-                              <a href={item.url}>
+                              <Link href={item.url}>
                                  <i>icon</i>
                                  <span>{item.title}</span>
-                              </a>
+                              </Link>
                            </SidebarMenuButton>
                         </SidebarMenuItem>
                      ))}

@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
 import '~/styles/globals.css';
 import { Roboto } from 'next/font/google';
+import { ThemeProvider } from '~/components/themesProvider';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
+import { ThemeProvider as MUIThemeProvider } from '@mui/material/styles';
+import theme from '~/mui/theme';
+import { CssBaseline } from '@mui/material';
 
 const roboto = Roboto({
    subsets: ['latin'],
@@ -26,7 +31,16 @@ export default function RootLayout({
                content="initial-scale=1, width=device-width"
             />
          </head>
-         <body className={`${roboto.variable} antialiased`}>{children}</body>
+         <body className={`${roboto.variable} antialiased`}>
+            <ThemeProvider
+               attribute="class"
+               defaultTheme="dark"
+               enableSystem={false}
+               disableTransitionOnChange
+            >
+               {children}
+            </ThemeProvider>
+         </body>
       </html>
    );
 }

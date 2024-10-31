@@ -27,9 +27,7 @@ export default function DashboardInvoices() {
             </ScrollArea>
          </div>
 
-         <div className="bg-third w-[65%] mx-10">
-            block 2<Button>Test MUI</Button>
-         </div>
+         <div className="bg-third w-[65%] mx-10">block 2</div>
       </div>
    );
 }
