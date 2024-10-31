@@ -32,7 +32,7 @@ const usuallyItems = [
    },
    {
       title: 'Invoices',
-      url: '#',
+      url: '/invoices',
       icon: '',
    },
 ];
@@ -40,12 +40,12 @@ const usuallyItems = [
 const otherItems = [
    {
       title: 'Categories',
-      url: '#',
+      url: '/categories',
       icon: '',
    },
    {
       title: 'Promotions',
-      url: '#',
+      url: '/promotions',
       icon: '',
    },
 ];

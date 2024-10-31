@@ -23,7 +23,10 @@ const config: Config = {
       },
       extend: {
          colors: {
+            bg: '#111824',
             primary: '#162336',
+            secondary: '#1f2e44',
+            third: '#172336',
          },
       },
    },
