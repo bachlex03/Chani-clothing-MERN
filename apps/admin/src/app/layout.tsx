@@ -33,15 +33,15 @@ export default function RootLayout({
             />
          </head>
          <body className={`${roboto.variable} antialiased`}>
-            <Toaster />
+            {/* <Toaster />
             <ThemeProvider
                attribute="class"
                defaultTheme="dark"
                enableSystem={false}
                disableTransitionOnChange
             >
-               <main>{children}</main>
-            </ThemeProvider>
+            </ThemeProvider> */}
+            <main>{children}</main>
          </body>
       </html>
    );

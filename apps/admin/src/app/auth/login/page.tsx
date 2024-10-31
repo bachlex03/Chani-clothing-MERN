@@ -13,11 +13,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
-
-const authSchema = z.object({
-   email: z.string().email({ message: 'Invalid email address' }),
-   password: z.string().min(6),
-});
+import { authSchema } from '~/schemaValidations/authSchema';
+import * as authServices from '~/services/auth/login.services';
+import { ApiError } from '~/app/common/errors/Api.error';
 
 export default function Login() {
    const form = useForm<z.infer<typeof authSchema>>({
@@ -28,14 +26,22 @@ export default function Login() {
       },
    });
 
-   const onLogin = (values: z.infer<typeof authSchema>) => {
-      console.log(values);
+   const onLogin = async (values: z.infer<typeof authSchema>) => {
+      const result = await authServices.login(values);
+
+      console.log(result);
+
+      if (result instanceof ApiError) {
+         console.log(result.errorResponse);
+      }
+
+      // Cookies.set('access-token', result.accessToken);
    };
 
    return (
       <div className="container h-screen flex items-center">
          <div className="w-full p-[32px] rounded-xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]">
-            <h2 className="text-[42px] font-bold">Sign in</h2>
+            <h2 className="text-[42px] font-bold">Administrator login</h2>
             <div>
                <Form {...form}>
                   <form onSubmit={form.handleSubmit(onLogin)} className="">
@@ -52,6 +58,7 @@ export default function Login() {
                                        {...field}
                                        className="rounded-xl"
                                        type="email"
+                                       required={true}
                                     />
                                  </FormControl>
                                  <FormMessage />
@@ -75,6 +82,7 @@ export default function Login() {
                                        {...field}
                                        className="rounded-xl"
                                        type="password"
+                                       required={true}
                                     />
                                  </FormControl>
                                  <FormMessage />

@@ -51,8 +51,6 @@ export default async function DashboardProducts() {
             <div className="flex justify-between pt-5">
                <Button>Add Product</Button>
 
-               <Button>Add Product</Button>
-
                <ProductDetails />
             </div>
 

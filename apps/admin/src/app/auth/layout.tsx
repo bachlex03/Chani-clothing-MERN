@@ -21,18 +21,14 @@ export default function AuthLayout({
    children: React.ReactNode;
 }>) {
    return (
-      <html lang="en">
-         <body className={`${roboto.variable} antialiased`}>
-            <div className="flex flex-row">
-               <div className="w-[70%] h-screen bg-[#f2f8f8]">
-                  <div className="relative w-[50%] h-[100%] left-[25%]">
-                     <Image src={images.loginBg} alt="project" fill />
-                  </div>
-               </div>
-
-               <div className="w-[30%]">{children}</div>
+      <div className="flex flex-row">
+         <div className="w-[70%] h-screen bg-[#f2f8f8]">
+            <div className="relative w-[50%] h-[100%] left-[25%]">
+               <Image src={images.loginBg} alt="project" fill />
             </div>
-         </body>
-      </html>
+         </div>
+
+         <div className="w-[30%]">{children}</div>
+      </div>
    );
 }
