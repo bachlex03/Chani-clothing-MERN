@@ -1,6 +1,7 @@
 import { columns } from '~/components/columns';
 import DataTable from '~/components/dataTable';
 import Header from '~/components/Header';
+import ProductDetails from '~/components/productDetails';
 import { Button } from '~/components/ui/button';
 
 type Payment = {
@@ -51,6 +52,8 @@ export default async function DashboardProducts() {
                <Button>Add Product</Button>
 
                <Button>Add Product</Button>
+
+               <ProductDetails />
             </div>
 
             <div className="mx-auto py-10">

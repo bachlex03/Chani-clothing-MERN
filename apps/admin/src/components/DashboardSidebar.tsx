@@ -35,11 +35,6 @@ const usuallyItems = [
       url: '#',
       icon: '',
    },
-   {
-      title: 'Customers',
-      url: '#',
-      icon: '',
-   },
 ];
 
 const otherItems = [
