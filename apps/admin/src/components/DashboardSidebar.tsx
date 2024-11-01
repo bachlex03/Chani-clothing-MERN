@@ -55,32 +55,26 @@ export default function DashBoardSidebar() {
       <Sidebar>
          <SidebarHeader />
          <SidebarContent>
-            <Collapsible>
-               <SidebarGroup>
-                  <SidebarGroupLabel asChild>
-                     <CollapsibleTrigger>Application</CollapsibleTrigger>
-                  </SidebarGroupLabel>
-                  <CollapsibleContent>
-                     <SidebarGroupContent>
-                        <SidebarMenu>
-                           {applicationItems.map((item) => (
-                              <SidebarMenuItem key={item.title}>
-                                 <SidebarMenuButton asChild>
-                                    <a href={item.url}>
-                                       <i>icon</i>
-                                       <span>{item.title}</span>
-                                    </a>
-                                 </SidebarMenuButton>
-                              </SidebarMenuItem>
-                           ))}
-                        </SidebarMenu>
-                     </SidebarGroupContent>
-                  </CollapsibleContent>
-               </SidebarGroup>
-            </Collapsible>
+            <SidebarGroup>
+               <SidebarGroupLabel>Application</SidebarGroupLabel>
+               <SidebarGroupContent>
+                  <SidebarMenu>
+                     {applicationItems.map((item) => (
+                        <SidebarMenuItem key={item.title}>
+                           <SidebarMenuButton asChild>
+                              <Link href={item.url}>
+                                 <i>icon</i>
+                                 <span>{item.title}</span>
+                              </Link>
+                           </SidebarMenuButton>
+                        </SidebarMenuItem>
+                     ))}
+                  </SidebarMenu>
+               </SidebarGroupContent>
+            </SidebarGroup>
 
             <SidebarGroup>
-               <SidebarGroupLabel>Others</SidebarGroupLabel>
+               <SidebarGroupLabel>Usually</SidebarGroupLabel>
                <SidebarGroupContent>
                   <SidebarMenu>
                      {usuallyItems.map((item) => (
@@ -98,7 +92,7 @@ export default function DashBoardSidebar() {
             </SidebarGroup>
 
             <SidebarGroup>
-               <SidebarGroupLabel>Usually</SidebarGroupLabel>
+               <SidebarGroupLabel>Others</SidebarGroupLabel>
                <SidebarGroupContent>
                   <SidebarMenu>
                      {otherItems.map((item) => (

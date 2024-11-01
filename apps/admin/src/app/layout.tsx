@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import '~/styles/globals.css';
 import { Roboto } from 'next/font/google';
-import { ThemeProvider } from '~/components/themesProvider';
 import { Toaster } from '~/components/ui/toaster';
+import { fontSans } from '~/fonts';
 
 const roboto = Roboto({
    subsets: ['latin'],
@@ -20,6 +20,8 @@ export default function RootLayout({
 }: Readonly<{
    children: React.ReactNode;
 }>) {
+   console.log('fontSans', fontSans);
+
    return (
       <html lang="en">
          <head>
@@ -28,7 +30,7 @@ export default function RootLayout({
                content="initial-scale=1, width=device-width"
             />
          </head>
-         <body className={`${roboto.variable} antialiased`}>
+         <body className={`${fontSans.variable} antialiased`}>
             <Toaster />
             <main>{children}</main>
          </body>

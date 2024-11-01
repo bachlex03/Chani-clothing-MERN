@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
 const config: Config = {
    darkMode: ['class'],
@@ -20,6 +21,8 @@ const config: Config = {
       },
       fontFamily: {
          primary: 'var(--font-roboto)',
+         secondary: 'var(--font-josefin-sans)',
+         sans: ['var(--font-geist-sans)', ...fontFamily.sans],
       },
       extend: {
          colors: {

@@ -23,7 +23,6 @@ export default function DashboardLayout({
          <SidebarProvider>
             <DashBoardSidebar />
             <main className="w-full">
-               <Header />
                <SidebarTrigger className="w-24 ml-2 mt-2 rounded-[4px] absolute z-20" />
 
                {isMounted && (
@@ -33,6 +32,7 @@ export default function DashboardLayout({
                      enableSystem={false}
                      disableTransitionOnChange
                   >
+                     <Header />
                      {children}
                   </ThemeProvider>
                )}

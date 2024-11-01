@@ -1,4 +1,6 @@
 import { columns } from '~/components/columns';
+import CreateProductAside from '~/components/createProduct';
+import CreateProduct from '~/components/createProduct';
 import DataTable from '~/components/dataTable';
 import Header from '~/components/Header';
 import ProductDetails from '~/components/productDetails';
@@ -52,6 +54,7 @@ export default async function DashboardProducts() {
                <Button>Add Product</Button>
 
                {/* <ProductDetails /> */}
+               <CreateProductAside />
             </div>
 
             <div className="mx-auto py-10">
