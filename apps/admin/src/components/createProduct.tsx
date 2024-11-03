@@ -1,9 +1,18 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { toast } from '~/hooks/use-toast';
 import { Button } from './ui/button';
-import { Form } from './ui/form';
+import {
+   Form,
+   FormControl,
+   FormField,
+   FormItem,
+   FormLabel,
+   FormMessage,
+} from './ui/form';
 import { ScrollArea } from './ui/scroll-area';
 import {
    Sheet,
@@ -14,11 +23,16 @@ import {
 } from './ui/sheet';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { any, z } from 'zod';
 import AppInput from './app-input';
 import AppSelect from '~/components/app-select';
 import AppTextArea from '~/components/app-text-area';
 import images from '../../public/images';
+import Image from 'next/image';
+import AppColorCheckbox from '~/components/app-color-checkbox';
+import AppSizeCheckbox from '~/components/app-size-checkbox';
+import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
+import { useState } from 'react';
 
 const statusOptions = [
    {
@@ -95,6 +109,22 @@ const genderOptions = [
    },
 ];
 
+enum sizeEnum {
+   S = 'S',
+   M = 'M',
+   L = 'L',
+   XL = 'XL',
+   '2XL' = '2XL',
+}
+
+enum colorEnum {
+   brown = 'brown',
+   grey = 'grey',
+   yellow = 'yellow',
+   pink = 'pink',
+   red = 'red',
+}
+
 const FormSchema = z.object({
    name: z
       .string()
@@ -104,63 +134,49 @@ const FormSchema = z.object({
       .min(2, {
          message: 'Product title must be at least 2 characters.',
       }),
-   description: z.string().min(2, {
-      message: 'Product description must be at least 2 characters..',
+   brand: z.string({
+      required_error: 'Please select brand for the product.',
    }),
-   images: z.string().min(2, {
-      message: 'Product description must be at least 2 characters',
+   status: z.string({
+      required_error: 'Please select status for the product.',
    }),
-   gender: z.string().min(2, {
-      message: 'Product description must be at least 2 characters..',
+   gender: z.string({
+      required_error: 'Please select gender for the product.',
    }),
-   type: z.string().min(2, {
-      message: 'Product description must be at least 2 characters..',
+   type: z.string({
+      required_error: 'Please select type for the product.',
    }),
-   brand: z.string().min(2, {
-      message: 'Product description must be at least 2 characters..',
+   category: z.string({
+      required_error: 'Please select category for the product.',
    }),
-   categoryId: z.string().min(2, {
-      message: 'Product description must be at least 2 characters..',
+   description: z.string({
+      required_error: 'Please enter description for the product.',
    }),
-   category: z.string().min(2, {
-      message: 'Product description must be at least 2 characters..',
+   price: z.any().refine((price) => Number(price) > 0, {
+      message: 'Price must be at least 1.',
    }),
-   color: z.string().min(1, {
-      message: 'Product quantity must be at least 1.',
+   quantity: z.any().refine((quantity) => Number(quantity) > 0, {
+      message: 'Quantity must be at least 1.',
    }),
-   price: z
-      .number()
-      .min(2, {
-         message: 'Product description must be at least 2 characters..',
-      })
-      .default(0),
-   quantity: z
-      .number()
-      .min(1, {
-         message: 'Product quantity must be at least 1.',
-      })
-      .default(1),
-   status: z.string().min(2, {
-      message: 'Product description must be at least 2 characters..',
+   size: z.enum(['S', 'M', 'L', 'XL', '2XL'], {
+      required_error: 'You need to select a size for product.',
+   }),
+   color: z.enum(['brown', 'grey', 'yellow', 'pink', 'red'], {
+      required_error: 'You need to select a color for product.',
    }),
 });
 
 export default function CreateProductAside() {
+   const [name, setName] = useState('');
+
    const form = useForm<z.infer<typeof FormSchema>>({
       resolver: zodResolver(FormSchema),
       defaultValues: {
          name: '',
-         description: '',
-         images: '',
-         gender: '',
-         type: '',
-         brand: '',
-         categoryId: '',
-         category: '',
-         color: '',
+         quantity: 0,
          price: 0,
-         quantity: 1,
-         status: '',
+         size: sizeEnum.S,
+         color: colorEnum.brown,
       },
    });
 
@@ -181,14 +197,14 @@ export default function CreateProductAside() {
       <div>
          <Sheet>
             <SheetTrigger>Open</SheetTrigger>
-            <SheetContent className="w-[80%]">
+            <SheetContent className="w-[80%] dark:bg-four">
                <SheetHeader>
                   <SheetTitle>Add Product</SheetTitle>
                </SheetHeader>
 
                <div className="flex justify-between">
                   <div className="w-[70%]">
-                     <ScrollArea className="h-[75%] w-[100%] mt-5 rounded-md border p-4">
+                     <ScrollArea className="h-[88vh] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
                         <div className="w-full px-5">
                            <Form {...form}>
                               <form
@@ -246,7 +262,7 @@ export default function CreateProductAside() {
                                        <AppSelect
                                           name="category"
                                           label="Category"
-                                          data={[]}
+                                          data={categoryOptions}
                                           form={form as any}
                                        />
                                     </div>
@@ -267,6 +283,29 @@ export default function CreateProductAside() {
                                           label="Gender"
                                           placeholder="Select gender"
                                           data={genderOptions}
+                                          form={form as any}
+                                       />
+                                    </div>
+                                 </div>
+
+                                 <div className="grid grid-cols-2">
+                                    <div>
+                                       <h2 className="mb-5 text-sm font-semibold">
+                                          Color Variants
+                                       </h2>
+                                       <AppColorCheckbox
+                                          name="color"
+                                          form={form as any}
+                                       />
+                                    </div>
+
+                                    <div>
+                                       <h2 className="mb-5 text-sm font-semibold">
+                                          Size Variants
+                                       </h2>
+
+                                       <AppSizeCheckbox
+                                          name="size"
                                           form={form as any}
                                        />
                                     </div>
@@ -294,7 +333,7 @@ export default function CreateProductAside() {
                                     <div className="col-span-1">
                                        <AppInput
                                           name="price"
-                                          placeholder="0$"
+                                          placeholder="0 $"
                                           description='Price currency is in "$"'
                                           form={form as any}
                                           label="Price"
@@ -305,7 +344,7 @@ export default function CreateProductAside() {
                                     <div className="col-span-1">
                                        <AppInput
                                           name="quantity"
-                                          placeholder="0"
+                                          // placeholder="
                                           form={form as any}
                                           label="Quantity"
                                           type="number"
@@ -313,7 +352,14 @@ export default function CreateProductAside() {
                                     </div>
                                  </div>
 
-                                 <Button type="submit">Submit</Button>
+                                 <div className="w-[100%]">
+                                    <Button
+                                       type="submit"
+                                       className="text-right"
+                                    >
+                                       Create new
+                                    </Button>
+                                 </div>
                               </form>
                            </Form>
                         </div>
@@ -321,8 +367,34 @@ export default function CreateProductAside() {
                   </div>
 
                   <div className="w-[27%]">
-                     <ScrollArea className="h-[75%] w-[100%] mt-5 rounded-md border p-4">
-                        <div className="w-full px-5"></div>
+                     <ScrollArea className="h-[75%] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
+                        <div className="w-full px-5">
+                           <h2 className="font-bold text-xl">
+                              Product card preview
+                           </h2>
+
+                           <div className="w-[240px] h-[240px] mt-5 rounded-xl bg-[#121f31]">
+                              <div className="flex justify-center items-center h-[100%]">
+                                 <img
+                                    src="https://themesdesign.in/tailwick/html-dark/assets/images/img-03.png"
+                                    className="w-[200px] h-[200px]"
+                                    alt="sample image"
+                                 />
+                              </div>
+                           </div>
+
+                           <h2 className="mt-5 text-lg font-semibold">
+                              $200.99
+                           </h2>
+
+                           <h2 className="mt-5 text-lg font-bold">
+                              Default Product Name
+                           </h2>
+
+                           <p className="text-sm mt-1 text-slate-300 font-medium">
+                              Woman's Fashion
+                           </p>
+                        </div>
                      </ScrollArea>
                   </div>
                </div>

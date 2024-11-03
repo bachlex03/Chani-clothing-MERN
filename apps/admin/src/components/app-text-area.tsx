@@ -23,14 +23,14 @@ export default function AppTextArea(props: AppTextAreaProps) {
    return (
       <FormField
          control={props.form.control}
-         name="bio"
+         name={props.name || ''}
          render={({ field }) => (
             <FormItem>
                <FormLabel>{props.label || 'Default label'}</FormLabel>
                <FormControl>
                   <Textarea
                      placeholder={props.placeholder || ''}
-                     className="resize-none"
+                     className="resize-none dark:bg-five"
                      {...field}
                   />
                </FormControl>
