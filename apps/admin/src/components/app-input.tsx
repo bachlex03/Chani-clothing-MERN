@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
    FormControl,
    FormDescription,
@@ -11,32 +12,37 @@ import {
 import { UseFormReturn } from 'react-hook-form';
 import { Input } from './ui/input';
 
-export default function AppInput({
-   form,
-   name = '',
-   label = '',
-   description = '',
-}: {
+export type AppInputProps = {
    form: UseFormReturn;
    name: string;
+   placeholder?: string;
    label?: string;
    description?: string;
-}) {
+   type?: string;
+   defaultValue?: string | number;
+   disabled?: boolean;
+};
+
+export default function AppInput(props: AppInputProps) {
    return (
       <FormField
-         control={form.control}
-         name={name}
+         control={props.form.control || undefined}
+         name={props.name || ''}
          render={({ field }) => (
             <FormItem>
-               <FormLabel>{label}</FormLabel>
+               <FormLabel>{props.label || ''}</FormLabel>
                <FormControl>
                   <Input
-                     placeholder="Product title"
+                     placeholder={props.placeholder || ''}
                      {...field}
                      className="w-full"
+                     accept="image/*"
+                     multiple
+                     type={props.type || 'text'}
+                     disabled={props.disabled}
                   />
                </FormControl>
-               <FormDescription>{description}</FormDescription>
+               <FormDescription>{props.description}</FormDescription>
                <FormMessage />
             </FormItem>
          )}
