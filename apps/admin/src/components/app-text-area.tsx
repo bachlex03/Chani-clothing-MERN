@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UseFormReturn } from 'react-hook-form';
 import {
    FormControl,
@@ -17,6 +18,8 @@ export type AppTextAreaProps = {
    description?: string;
    placeholder?: string;
    defaultValue?: string;
+   value?: string;
+   setValue?: (e: any) => void;
 };
 
 export default function AppTextArea(props: AppTextAreaProps) {
@@ -32,6 +35,13 @@ export default function AppTextArea(props: AppTextAreaProps) {
                      placeholder={props.placeholder || ''}
                      className="resize-none dark:bg-five"
                      {...field}
+                     value={props.value}
+                     onChange={(e) => {
+                        if (props.setValue) {
+                           field.onChange(e);
+                           props.setValue(e.target.value);
+                        }
+                     }}
                   />
                </FormControl>
                <FormDescription>{props.description || ''}</FormDescription>

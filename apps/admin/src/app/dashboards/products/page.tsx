@@ -29,31 +29,13 @@ export const payments: Payment[] = [
    // ...
 ];
 
-async function getData(): Promise<Payment[]> {
-   // Fetch data from your API here.
-   return [
-      {
-         id: '728ed52f',
-         amount: 100,
-         status: 'pending',
-         email: 'm@example.com',
-      },
-      // ...
-   ];
-}
-
 export default async function DashboardProducts() {
-   const data = await getData();
-
    return (
       <div className="w-full">
          <Header />
 
          <div className=" bg-primary h-[500px] mx-8 mt-20 px-5 rounded-lg">
-            <div className="flex justify-between pt-5">
-               <Button>Add Product</Button>
-
-               {/* <ProductDetails /> */}
+            <div className="flex justify-end pt-5">
                <CreateProductAside />
             </div>
 
