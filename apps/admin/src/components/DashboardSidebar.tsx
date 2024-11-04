@@ -52,7 +52,7 @@ const otherItems = [
 
 export default function DashBoardSidebar() {
    return (
-      <Sidebar>
+      <Sidebar className="dark:bg-five dark:border-r-slate-600">
          <SidebarHeader />
          <SidebarContent>
             <SidebarGroup>

@@ -5,14 +5,7 @@
 
 import { toast } from '~/hooks/use-toast';
 import { Button } from './ui/button';
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from './ui/form';
+import { Form } from './ui/form';
 import { ScrollArea } from './ui/scroll-area';
 import {
    Sheet,
@@ -23,16 +16,13 @@ import {
 } from './ui/sheet';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { any, z } from 'zod';
+import { z } from 'zod';
 import AppInput from './app-input';
 import AppSelect from '~/components/app-select';
 import AppTextArea from '~/components/app-text-area';
-import images from '../../public/images';
-import Image from 'next/image';
 import AppColorCheckbox from '~/components/app-color-checkbox';
 import AppSizeCheckbox from '~/components/app-size-checkbox';
-import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const statusOptions = [
    {
@@ -171,6 +161,7 @@ export default function CreateProductAside() {
    const [description, setDescription] = useState('');
    const [price, SetPrice] = useState(0);
    const [quantity, setQuantity] = useState(0);
+   const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
    const form = useForm<z.infer<typeof FormSchema>>({
       resolver: zodResolver(FormSchema),
@@ -199,8 +190,14 @@ export default function CreateProductAside() {
    return (
       <div>
          <Sheet>
-            <Button className="dark:bg-white dark:text-four font-semibold py-2 px-3 text-sm rounded-md">
-               <SheetTrigger className="">+ Add new Product</SheetTrigger>
+            <SheetTrigger ref={triggerBtnRef}></SheetTrigger>
+            <Button
+               className="dark:bg-white dark:text-four font-semibold py-2 px-3 text-sm rounded-md"
+               onClick={() => {
+                  if (triggerBtnRef.current) triggerBtnRef.current?.click();
+               }}
+            >
+               + Add new
             </Button>
             <SheetContent className="w-[80%] dark:bg-four">
                <SheetHeader>
