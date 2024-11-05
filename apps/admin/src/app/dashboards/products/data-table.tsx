@@ -32,26 +32,9 @@ import {
 } from '~/components/ui/table';
 import { productColumns, columns, Product, Payment } from './columns';
 import { useState } from 'react';
+import { ILoginPayload } from '~/types/auth/login.type';
 
 const data: Product[] = [
-   {
-      id: '1',
-      product_code: '#LVCOM-715920526',
-      product_name: 'Sunflower Jumpsuit',
-      category_name: 'Maxi',
-      product_price: 100,
-      product_stocks: 270,
-      product_status: 'Published',
-   },
-   {
-      id: '1',
-      product_code: '#LVCOM-715920526',
-      product_name: 'Sunflower Jumpsuit',
-      category_name: 'Maxi',
-      product_price: 100,
-      product_stocks: 270,
-      product_status: 'Published',
-   },
    {
       id: '1',
       product_code: '#LVCOM-715920526',

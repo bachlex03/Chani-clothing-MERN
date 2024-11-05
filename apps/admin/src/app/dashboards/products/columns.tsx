@@ -11,6 +11,8 @@ import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
 import { Button } from '~/components/ui/button';
 import { Checkbox } from '~/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
+import ProductDialog from '~/components/product-dialog';
+import { Dialog, DialogTrigger } from '~/components/ui/dialog';
 
 export type Payment = {
    id: string;
@@ -193,24 +195,30 @@ export const productColumns: ColumnDef<Product>[] = [
          const product = row.original;
 
          return (
-            <DropdownMenu>
-               <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                     <span className="sr-only">Open menu</span>
-                     <DotsHorizontalIcon className="h-4 w-4" />
-                  </Button>
-               </DropdownMenuTrigger>
-               <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuItem
-                     onClick={() => navigator.clipboard.writeText(product.id)}
-                  >
-                     Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Delete</DropdownMenuItem>
-               </DropdownMenuContent>
-            </DropdownMenu>
+            <Dialog>
+               <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                     <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <DotsHorizontalIcon className="h-4 w-4" />
+                     </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                     {/* <DropdownMenuItem
+                        onClick={() =>
+                           navigator.clipboard.writeText(product.id)
+                        }
+                     ></DropdownMenuItem> */}
+                     <DialogTrigger asChild>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                     </DialogTrigger>
+                     <DropdownMenuSeparator />
+                     <DropdownMenuItem>Delete</DropdownMenuItem>
+                  </DropdownMenuContent>
+               </DropdownMenu>
+               <ProductDialog />
+            </Dialog>
          );
       },
    },
