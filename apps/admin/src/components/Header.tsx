@@ -17,7 +17,7 @@ export default function Header({ className = '' }) {
                <FaRegBell />
             </i>
 
-            <i className="text-2xl">
+            <i className="text-2xl  ">
                <ModeToggle />
             </i>
 

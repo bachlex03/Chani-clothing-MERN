@@ -400,9 +400,7 @@ export default function ProductDialog() {
                </div>
             </div>
          </div>
-         <DialogFooter>
-            {/* <Button type="submit">Save changes</Button> */}
-         </DialogFooter>
+         <DialogFooter></DialogFooter>
       </DialogContent>
    );
 }

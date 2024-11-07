@@ -10,17 +10,25 @@ import {
    SidebarGroupContent,
    SidebarHeader,
    SidebarFooter,
+   SidebarMenuSub,
+   SidebarMenuSubItem,
+   SidebarMenuSubButton,
 } from './ui/sidebar';
 import { DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Collapsible, CollapsibleTrigger } from '@radix-ui/react-collapsible';
 import { CollapsibleContent } from './ui/collapsible';
 import Link from 'next/link';
+import { MdOutlineSpaceDashboard, MdOutlineDiscount } from 'react-icons/md';
+import { TbBrandProducthunt, TbFileInvoice, TbCategory } from 'react-icons/tb';
+import { Button } from './ui/button';
+import { ChevronUp, User2 } from 'lucide-react';
+import { PiSignOutBold } from 'react-icons/pi';
 
 const applicationItems = [
    {
       title: 'Dashboard',
       url: '/dashboards',
-      icon: '',
+      icon: <MdOutlineSpaceDashboard className="text-[18px] ml-3" />,
    },
 ];
 
@@ -28,12 +36,12 @@ const usuallyItems = [
    {
       title: 'Products',
       url: '/dashboards/products',
-      icon: '',
+      icon: <TbBrandProducthunt className="text-[18px] ml-3" />,
    },
    {
       title: 'Invoices',
       url: '/dashboards/invoices',
-      icon: '',
+      icon: <TbFileInvoice className="text-[18px] ml-3" />,
    },
 ];
 
@@ -41,12 +49,12 @@ const otherItems = [
    {
       title: 'Categories',
       url: '/dashboards/categories',
-      icon: '',
+      icon: <TbCategory className="text-[18px] ml-3" />,
    },
    {
       title: 'Promotions',
       url: '/dashboards/promotions',
-      icon: '',
+      icon: <MdOutlineDiscount className="text-[18px] ml-3" />,
    },
 ];
 
@@ -56,15 +64,17 @@ export default function DashBoardSidebar() {
          <SidebarHeader />
          <SidebarContent>
             <SidebarGroup>
-               <SidebarGroupLabel>Application</SidebarGroupLabel>
+               <SidebarGroupLabel>Applications</SidebarGroupLabel>
                <SidebarGroupContent>
                   <SidebarMenu>
                      {applicationItems.map((item) => (
                         <SidebarMenuItem key={item.title}>
                            <SidebarMenuButton asChild>
                               <Link href={item.url}>
-                                 <i>icon</i>
-                                 <span>{item.title}</span>
+                                 <i>{item.icon}</i>
+                                 <span className="font-medium">
+                                    {item.title}
+                                 </span>
                               </Link>
                            </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -81,8 +91,10 @@ export default function DashBoardSidebar() {
                         <SidebarMenuItem key={item.title}>
                            <SidebarMenuButton asChild>
                               <Link href={item.url}>
-                                 <i>icon</i>
-                                 <span>{item.title}</span>
+                                 <i>{item.icon}</i>
+                                 <span className="font-medium">
+                                    {item.title}
+                                 </span>
                               </Link>
                            </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -99,8 +111,10 @@ export default function DashBoardSidebar() {
                         <SidebarMenuItem key={item.title}>
                            <SidebarMenuButton asChild>
                               <Link href={item.url}>
-                                 <i>icon</i>
-                                 <span>{item.title}</span>
+                                 <i>{item.icon}</i>
+                                 <span className="font-medium">
+                                    {item.title}
+                                 </span>
                               </Link>
                            </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -116,22 +130,19 @@ export default function DashBoardSidebar() {
                   <DropdownMenu>
                      <DropdownMenuTrigger asChild>
                         <SidebarMenuButton>
-                           <i>Username</i>
-                           <i>icon</i>
+                           <User2 /> Username
+                           <ChevronUp className="ml-auto" />
                         </SidebarMenuButton>
                      </DropdownMenuTrigger>
                      <DropdownMenuContent
                         side="top"
-                        className="w-[--radix-popper-anchor-width]"
+                        className="w-[--radix-popper-anchor-width] dark:bg-four"
                      >
-                        <DropdownMenuItem>
-                           <span>Account</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                           <span>Billing</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                           <span>Sign out</span>
+                        <DropdownMenuItem className="py-1 dark:hover:bg-slate-600 flex items-center">
+                           <i className="ml-2">
+                              <PiSignOutBold />
+                           </i>
+                           <span className="text-sm ml-3">Sign out</span>
                         </DropdownMenuItem>
                      </DropdownMenuContent>
                   </DropdownMenu>
