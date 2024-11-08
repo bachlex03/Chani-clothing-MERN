@@ -22,7 +22,7 @@ export default function DashboardLayout({
       <div>
          <SidebarProvider>
             <DashBoardSidebar />
-            <main className="w-full">
+            <main className="w-full dark:bg-four">
                <SidebarTrigger className="w-24 ml-2 mt-2 rounded-[4px] absolute z-20" />
 
                {isMounted && (

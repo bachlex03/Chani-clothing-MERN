@@ -5,14 +5,7 @@
 
 import { toast } from '~/hooks/use-toast';
 import { Button } from './ui/button';
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from './ui/form';
+import { Form } from './ui/form';
 import { ScrollArea } from './ui/scroll-area';
 import {
    Sheet,
@@ -23,16 +16,13 @@ import {
 } from './ui/sheet';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { any, z } from 'zod';
+import { z } from 'zod';
 import AppInput from './app-input';
 import AppSelect from '~/components/app-select';
 import AppTextArea from '~/components/app-text-area';
-import images from '../../public/images';
-import Image from 'next/image';
 import AppColorCheckbox from '~/components/app-color-checkbox';
 import AppSizeCheckbox from '~/components/app-size-checkbox';
-import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const statusOptions = [
    {
@@ -168,6 +158,10 @@ const FormSchema = z.object({
 
 export default function CreateProductAside() {
    const [name, setName] = useState('');
+   const [description, setDescription] = useState('');
+   const [price, SetPrice] = useState(0);
+   const [quantity, setQuantity] = useState(0);
+   const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
    const form = useForm<z.infer<typeof FormSchema>>({
       resolver: zodResolver(FormSchema),
@@ -196,7 +190,15 @@ export default function CreateProductAside() {
    return (
       <div>
          <Sheet>
-            <SheetTrigger>Open</SheetTrigger>
+            <SheetTrigger ref={triggerBtnRef}></SheetTrigger>
+            <Button
+               className="dark:bg-white dark:text-four font-semibold py-2 px-3 text-sm rounded-md"
+               onClick={() => {
+                  if (triggerBtnRef.current) triggerBtnRef.current?.click();
+               }}
+            >
+               + Add new
+            </Button>
             <SheetContent className="w-[80%] dark:bg-four">
                <SheetHeader>
                   <SheetTitle>Add Product</SheetTitle>
@@ -220,6 +222,8 @@ export default function CreateProductAside() {
                                        description="Do not exceed 40 characters when
                                              entering the name."
                                        type="text"
+                                       value={name}
+                                       setValue={setName}
                                     />
                                  </div>
 
@@ -312,12 +316,12 @@ export default function CreateProductAside() {
                                  </div>
 
                                  <div>
-                                    <AppInput
+                                    {/* <AppInput
                                        name="images"
                                        form={form as any}
                                        label="Images"
                                        type="file"
-                                    />
+                                    /> */}
                                  </div>
 
                                  <div>
@@ -326,6 +330,8 @@ export default function CreateProductAside() {
                                        label="Product description"
                                        placeholder="Enter product description"
                                        form={form as any}
+                                       value={description}
+                                       setValue={setDescription}
                                     />
                                  </div>
 
@@ -338,6 +344,8 @@ export default function CreateProductAside() {
                                           form={form as any}
                                           label="Price"
                                           type="number"
+                                          value={price}
+                                          setValue={SetPrice}
                                        />
                                     </div>
 
@@ -348,11 +356,13 @@ export default function CreateProductAside() {
                                           form={form as any}
                                           label="Quantity"
                                           type="number"
+                                          value={quantity}
+                                          setValue={setQuantity}
                                        />
                                     </div>
                                  </div>
 
-                                 <div className="w-[100%]">
+                                 <div className="w-[100%] flex justify-end">
                                     <Button
                                        type="submit"
                                        className="text-right"
@@ -368,7 +378,7 @@ export default function CreateProductAside() {
 
                   <div className="w-[27%]">
                      <ScrollArea className="h-[75%] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
-                        <div className="w-full px-5">
+                        <div className="w-full px-5 flex flex-col items-center">
                            <h2 className="font-bold text-xl">
                               Product card preview
                            </h2>
@@ -383,14 +393,19 @@ export default function CreateProductAside() {
                               </div>
                            </div>
 
-                           <h2 className="mt-5 text-lg font-semibold">
-                              $200.99
+                           <h2 className="mt-5 text-lg font-semibold self-start">
+                              ${price || 200.99}
                            </h2>
 
                            <h2 className="mt-5 text-lg font-bold">{name}</h2>
 
-                           <p className="text-sm mt-1 text-slate-300 font-medium">
+                           <p className="text-sm mt-1 text-slate-300 font-medium self-start">
                               Woman's Fashion
+                           </p>
+
+                           <p className="text-sm mt-5 dark:text-slate-400 self-start">
+                              {description ||
+                                 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis odio voluptatibus,tenetur totam obcaecati minima tempora nul porro! Fuga, id'}
                            </p>
                         </div>
                      </ScrollArea>

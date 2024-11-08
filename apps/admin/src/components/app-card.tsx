@@ -10,14 +10,16 @@ export type AppCardProps = {
 
 export default function AppCard(props: AppCardProps) {
    return (
-      <AppCardContent>
+      <AppCardContent className="border-none shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)]">
          <section>
             <p className="text-sm font-medium">{props.label}</p>
          </section>
 
          <section className="flex flex-col">
-            <h2 className="text-2xl font-bold">{props.amount}</h2>
-            <p className="text-xs text-gray-500">{props.description}</p>
+            <h2 className="text-2xl font-bold text-blue-400">{props.amount}</h2>
+            <p className="text-xs text-gray-500 font-semibold mt-2">
+               {props.description}
+            </p>
          </section>
       </AppCardContent>
    );

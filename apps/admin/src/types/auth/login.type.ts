@@ -10,3 +10,10 @@ export interface ILoginResponse {
    accessToken: string;
    refreshToken: string;
 }
+
+export interface ProductItem {
+   id: string;
+   name: string;
+   price: number;
+   quantity: number;
+}

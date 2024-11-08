@@ -71,6 +71,12 @@ const data: Payment[] = [
       status: 'failed',
       email: 'carmella@hotmail.com',
    },
+   {
+      id: 'bhqecj4p',
+      amount: 721,
+      status: 'failed',
+      email: 'carmella@hotmail.com',
+   },
 ];
 
 export type Payment = {
@@ -177,7 +183,7 @@ export const columns: ColumnDef<Payment>[] = [
    },
 ];
 
-export function DataTableDemo() {
+export function AppDataTable() {
    const [sorting, setSorting] = React.useState<SortingState>([]);
    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
       [],

@@ -21,6 +21,8 @@ export type AppInputProps = {
    type?: string;
    defaultValue?: string | number;
    disabled?: boolean;
+   value?: string | number;
+   setValue?: (e: any) => void;
 };
 
 export default function AppInput(props: AppInputProps) {
@@ -38,6 +40,13 @@ export default function AppInput(props: AppInputProps) {
                      className="w-full dark:bg-five"
                      type={props.type || 'text'}
                      disabled={props.disabled}
+                     value={props.value}
+                     onChange={(e) => {
+                        if (props.setValue) {
+                           field.onChange(e);
+                           props.setValue(e.target.value);
+                        }
+                     }}
                   />
                </FormControl>
                <FormDescription>{props.description}</FormDescription>

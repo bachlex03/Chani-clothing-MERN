@@ -25,7 +25,6 @@ const chartData = [
    { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
    { browser: 'other', visitors: 190, fill: 'var(--color-other)' },
 ];
-
 const chartConfig = {
    visitors: {
       label: 'Visitors',
@@ -92,14 +91,14 @@ export default function DonutChart() {
                                     <tspan
                                        x={viewBox.cx}
                                        y={viewBox.cy}
-                                       className="fill-foreground text-3xl font-bold"
+                                       className="fill-foreground dark:fill-white text-3xl font-bold"
                                     >
                                        {totalVisitors.toLocaleString()}
                                     </tspan>
                                     <tspan
                                        x={viewBox.cx}
                                        y={(viewBox.cy || 0) + 24}
-                                       className="fill-muted-foreground"
+                                       className="fill-muted-foreground dark:fill-white"
                                     >
                                        Visitors
                                     </tspan>

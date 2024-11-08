@@ -17,7 +17,7 @@ export const get = async <IResponse>(
    const response = await fetch(baseUrl + serializedUrl, {
       method: 'GET',
       headers: {
-         'Content-Type': 'application-json',
+         'Content-Type': 'application/json',
          ...(Cookies.get('access-token')
             ? {
                  Authorization: `Bearer ${Cookies.get('access-token')}`,
