@@ -1,17 +1,16 @@
 import { IApiResponse } from '~/types/api-response.type';
 import { serializeUrl } from '../serializer';
 import { IHeaderOptions } from './header-options.interface';
-import { IBaseError } from '~/types/errors/base.error';
 import { ApiError } from '~/common/errors/Api.error';
-const Cookies = require('js-cookie');
+import Cookies from 'js-cookie';
 
 const baseUrl = 'http://localhost:3001/api/v1/';
 
-export const get = async <IResponse>(
+export const get = async (
    url: string,
    params: Record<string, string> = {},
    options: IHeaderOptions = {},
-) => {
+): Promise<IApiResponse | ApiError> => {
    const serializedUrl = serializeUrl(url, params);
 
    const response = await fetch(baseUrl + serializedUrl, {
@@ -27,7 +26,19 @@ export const get = async <IResponse>(
       },
    });
 
-   return (await response.json()) as IResponse;
+   if (!response.ok) {
+      const errorData = await response.json();
+      return new ApiError(
+         errorData.status,
+         errorData.code,
+         errorData.message,
+         errorData,
+      );
+   }
+
+   const resJson = (await response.json()) as IApiResponse;
+
+   return resJson;
 };
 
 export const post = async <IRequest>(
@@ -63,7 +74,7 @@ export const post = async <IRequest>(
       }
 
       return (await response.json()) as IApiResponse;
-   } catch (error) {
+   } catch {
       return new ApiError('500', 500, 'Internal server error');
    }
 };

@@ -1,289 +1,246 @@
 'use client';
 
-import Grid from '@mui/material/Grid';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
-import Paper from '@mui/material/Paper';
-import { useState } from 'react';
-import {
-   Card,
-   CardContent,
-   CardDescription,
-   CardFooter,
-   CardHeader,
-   CardTitle,
-} from './ui/card';
+import { ScrollArea } from '~/components/ui/scroll-area';
+import { Separator } from '~/components/ui/separator';
+import { AppCardContent } from './app-card';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
+import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import { use, useEffect, useState } from 'react';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
-   Select,
-   SelectContent,
-   SelectItem,
-   SelectTrigger,
-   SelectValue,
-} from './ui/select';
-import { Button as SButton } from './ui/button';
-import Box from '@mui/material/Box';
-import ListItem from '@mui/material/ListItem';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+   Form,
+   FormControl,
+   FormField,
+   FormItem,
+   FormLabel,
+   FormMessage,
+} from './ui/form';
+import { cn } from '~/lib/utils';
+import { Check, ChevronsUpDown } from 'lucide-react';
 import {
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
-   DialogTrigger,
-} from './ui/dialog';
-import { ImageListItem } from '@mui/material';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+   Command,
+   CommandEmpty,
+   CommandGroup,
+   CommandInput,
+   CommandItem,
+   CommandList,
+} from './ui/command';
 
-function not(a: readonly number[], b: readonly number[]) {
-   return a.filter((value) => !b.includes(value));
-}
+export type CategoryItemProps = {
+   key: number;
+   parentCategory: IGetAllCategoriesResponse;
+   categories: IGetAllCategoriesResponse[];
+};
 
-function intersection(a: readonly number[], b: readonly number[]) {
-   return a.filter((value) => b.includes(value));
-}
+export const updateCategorySchema = z.object({
+   name: z.string().min(3),
+   parentId: z.string({
+      required_error: 'Please select a parent category.',
+   }),
+});
 
-function renderRow(props: ListChildComponentProps) {
-   const { index, style } = props;
+export default function CategoryItem(props: CategoryItemProps) {
+   const [child, setChild] = useState<IGetAllCategoriesResponse[]>([]);
 
-   return (
-      <ListItem style={style} key={index} component="div" disablePadding>
-         <ListItemButton>
-            <ListItemText primary={`Item ${index + 1}`} />
+   const form = useForm<z.infer<typeof updateCategorySchema>>({
+      resolver: zodResolver(updateCategorySchema),
+      defaultValues: {
+         name: '',
+      },
+   });
 
-            <Popover>
-               <PopoverTrigger>edit</PopoverTrigger>
-               <PopoverContent className="w-80">
-                  <div className="grid gap-4">
-                     <div className="space-y-2">
-                        <h4 className="font-medium leading-none">Name</h4>
-                        <p className="text-sm text-muted-foreground">
-                           Set/Edit category name and description.
-                        </p>
-                     </div>
-                     <div className="grid gap-2">
-                        <div className="grid grid-cols-3 items-center gap-4">
-                           <Label htmlFor="width">Name</Label>
-                           <Input
-                              id="width"
-                              defaultValue="100%"
-                              className="col-span-2 h-8"
-                           />
-                        </div>
-                        <div className="grid grid-cols-3 items-center gap-4">
-                           <Label htmlFor="maxWidth">Description</Label>
-                           <Input
-                              id="maxWidth"
-                              defaultValue="300px"
-                              className="col-span-2 h-8"
-                           />
-                        </div>
-                     </div>
-                     <div className="flex mt-5 ml-auto gap-5">
-                        <SButton className="" type="submit">
-                           Delete
-                        </SButton>
-                        <SButton className="" type="submit">
-                           Save changes
-                        </SButton>
-                     </div>
-                  </div>
-               </PopoverContent>
-            </Popover>
-         </ListItemButton>
-      </ListItem>
-   );
-}
-
-export default function CategoryItem() {
-   const [checked, setChecked] = useState<readonly number[]>([]);
-   const [left, setLeft] = useState<readonly number[]>([0, 1, 2, 3]);
-   const [right, setRight] = useState<readonly number[]>([4, 5, 6, 7]);
-
-   const leftChecked = intersection(checked, left);
-   const rightChecked = intersection(checked, right);
-
-   const handleToggle = (value: number) => () => {
-      const currentIndex = checked.indexOf(value);
-      const newChecked = [...checked];
-
-      if (currentIndex === -1) {
-         newChecked.push(value);
-      } else {
-         newChecked.splice(currentIndex, 1);
-      }
-
-      setChecked(newChecked);
-   };
-
-   const handleAllRight = () => {
-      setRight(right.concat(left));
-      setLeft([]);
-   };
-
-   const handleCheckedRight = () => {
-      setRight(right.concat(leftChecked));
-      setLeft(not(left, leftChecked));
-      setChecked(not(checked, leftChecked));
-   };
-
-   const handleCheckedLeft = () => {
-      setLeft(left.concat(rightChecked));
-      setRight(not(right, rightChecked));
-      setChecked(not(checked, rightChecked));
-   };
-
-   const handleAllLeft = () => {
-      setLeft(left.concat(right));
-      setRight([]);
-   };
-
-   const customList = (items: readonly number[]) => (
-      <Paper sx={{ width: 200, height: 230, overflow: 'auto' }}>
-         <List dense component="div" role="list">
-            {items.map((value: number) => {
-               const labelId = `transfer-list-item-${value}-label`;
-
-               return (
-                  <ListItemButton
-                     key={value}
-                     role="listitem"
-                     onClick={handleToggle(value)}
-                  >
-                     <ListItemIcon>
-                        <Checkbox
-                           checked={checked.includes(value)}
-                           tabIndex={-1}
-                           disableRipple
-                           inputProps={{
-                              'aria-labelledby': labelId,
-                           }}
-                        />
-                     </ListItemIcon>
-                     <ListItemText
-                        id={labelId}
-                        primary={`List item ${value + 1}`}
-                     />
-                  </ListItemButton>
-               );
-            })}
-         </List>
-      </Paper>
+   const listParent = props.categories.filter(
+      (category) => category.category_parentId === null,
    );
 
+   const onUpdate = async (values: z.infer<typeof updateCategorySchema>) => {
+      console.log(values);
+   };
+
+   useEffect(() => {
+      const children = props.categories.filter(
+         (category) => category.category_parentId === props.parentCategory._id,
+      );
+      setChild(children);
+   }, []);
+
    return (
-      <div>
-         <div className="w-fit">
-            <Card className="w-[400px]">
-               <CardHeader>
-                  <CardTitle>Parent category name</CardTitle>
-                  <CardDescription>
-                     Deploy your new project in one-click.
-                  </CardDescription>
-               </CardHeader>
-               <CardContent>
-                  <Box
-                     sx={{
-                        width: '100%',
-                        height: 400,
-                        maxWidth: 360,
-                        bgcolor: 'background.paper',
-                     }}
-                  >
-                     <FixedSizeList
-                        height={400}
-                        width={360}
-                        itemSize={46}
-                        itemCount={10}
-                        overscanCount={5}
+      <div className="pb-10" key={props.parentCategory._id}>
+         <AppCardContent className="border-none dark:bg-[#1f2e44] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]">
+            <h2 className="font-semibold mb-3">
+               {props.parentCategory.category_name}
+            </h2>
+            <ScrollArea className="h-72 w-full rounded-md border">
+               <div className="p-4">
+                  <h4 className="mb-4 text-sm font-medium leading-none">
+                     Name
+                  </h4>
+                  {child.map((category, index) => (
+                     <div
+                        key={index}
+                        className="flex justify-between items-center h-10"
                      >
-                        {renderRow}
-                     </FixedSizeList>
-                  </Box>
-               </CardContent>
+                        <p className="text-sm font-medium">
+                           {category.category_name}
+                        </p>
 
-               <CardFooter className="flex justify-between">
-                  <Dialog>
-                     <DialogTrigger>Edit</DialogTrigger>
-                     <DialogContent className="w-fit">
-                        <DialogHeader>
-                           <DialogTitle>Edit root category</DialogTitle>
-                           <DialogDescription>
-                              Choose non-parent categories to display in the
-                              root category.
-                           </DialogDescription>
-                        </DialogHeader>
-
-                        <Grid
-                           container
-                           spacing={2}
-                           sx={{
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                           }}
-                        >
-                           <Grid item>{customList(left)}</Grid>
-                           <Grid item>
-                              <Grid
-                                 container
-                                 direction="column"
-                                 sx={{ alignItems: 'center' }}
+                        <Popover>
+                           <PopoverTrigger asChild>
+                              <Button
+                                 variant="outline"
+                                 className="text-xs px-3 py-3 dark:bg-five h-6 leading-none"
                               >
-                                 <SButton
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleAllRight}
-                                    disabled={left.length === 0}
-                                    aria-label="move all right"
-                                 >
-                                    ≫
-                                 </SButton>
-                                 <SButton
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleCheckedRight}
-                                    disabled={leftChecked.length === 0}
-                                    aria-label="move selected right"
-                                 >
-                                    &gt;
-                                 </SButton>
-                                 <SButton
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleCheckedLeft}
-                                    disabled={rightChecked.length === 0}
-                                    aria-label="move selected left"
-                                 >
-                                    &lt;
-                                 </SButton>
-                                 <SButton
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleAllLeft}
-                                    disabled={right.length === 0}
-                                    aria-label="move all left"
-                                 >
-                                    ≪
-                                 </SButton>
-                              </Grid>
-                           </Grid>
-                           <Grid item>{customList(right)}</Grid>
-                        </Grid>
+                                 Edit
+                              </Button>
+                           </PopoverTrigger>
+                           <PopoverContent className="w-80">
+                              <div className="grid gap-4">
+                                 <div className="space-y-2">
+                                    <h4 className="font-medium leading-none">
+                                       Edit category
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground">
+                                       Edit the category name and parent
+                                       category
+                                    </p>
+                                 </div>
+                                 <div className="grid gap-2">
+                                    <Form {...form}>
+                                       <form
+                                          onSubmit={form.handleSubmit(onUpdate)}
+                                       >
+                                          <FormField
+                                             control={form.control}
+                                             name="name"
+                                             render={({ field }) => (
+                                                <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                                                   <FormLabel htmlFor="name">
+                                                      Name
+                                                   </FormLabel>
+                                                   <FormControl>
+                                                      <Input
+                                                         id="name"
+                                                         placeholder="Name"
+                                                         {...field}
+                                                         className="col-span-2 h-8"
+                                                      />
+                                                   </FormControl>
+                                                   <FormMessage className="col-span-3" />
+                                                </FormItem>
+                                             )}
+                                          />
 
-                        <DialogFooter>
-                           <SButton type="submit">Save changes</SButton>
-                        </DialogFooter>
-                     </DialogContent>
-                  </Dialog>
-               </CardFooter>
-            </Card>
-         </div>
+                                          <FormField
+                                             control={form.control}
+                                             name="parentId"
+                                             render={({ field }) => (
+                                                <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                                                   <FormLabel>Parent</FormLabel>
+                                                   <Popover>
+                                                      <PopoverTrigger asChild>
+                                                         <FormControl>
+                                                            <Button
+                                                               variant="outline"
+                                                               role="combobox"
+                                                               className={cn(
+                                                                  'w-full justify-between col-span-2 h-8 dark:bg-[#162336]',
+                                                                  !field.value &&
+                                                                     'text-muted-foreground',
+                                                               )}
+                                                            >
+                                                               {field.value
+                                                                  ? listParent.find(
+                                                                       (
+                                                                          category,
+                                                                       ) =>
+                                                                          category._id ===
+                                                                          field.value,
+                                                                    )
+                                                                       ?.category_name
+                                                                  : 'Select category'}
+                                                               <ChevronsUpDown className="opacity-50" />
+                                                            </Button>
+                                                         </FormControl>
+                                                      </PopoverTrigger>
+                                                      <PopoverContent className="w-[200px] p-0">
+                                                         <Command>
+                                                            <CommandInput
+                                                               placeholder="Search framework..."
+                                                               className="h-9"
+                                                            />
+                                                            <CommandList>
+                                                               <CommandEmpty>
+                                                                  No framework
+                                                                  found.
+                                                               </CommandEmpty>
+                                                               <CommandGroup>
+                                                                  {listParent.map(
+                                                                     (
+                                                                        category,
+                                                                     ) => (
+                                                                        <CommandItem
+                                                                           value={
+                                                                              category.category_name
+                                                                           }
+                                                                           key={
+                                                                              category._id
+                                                                           }
+                                                                           onSelect={() => {
+                                                                              form.setValue(
+                                                                                 'parentId',
+                                                                                 category._id,
+                                                                              );
+                                                                           }}
+                                                                        >
+                                                                           {
+                                                                              category.category_name
+                                                                           }
+                                                                           <Check
+                                                                              className={cn(
+                                                                                 'ml-auto',
+                                                                                 category._id ===
+                                                                                    field.value
+                                                                                    ? 'opacity-100'
+                                                                                    : 'opacity-0',
+                                                                              )}
+                                                                           />
+                                                                        </CommandItem>
+                                                                     ),
+                                                                  )}
+                                                               </CommandGroup>
+                                                            </CommandList>
+                                                         </Command>
+                                                      </PopoverContent>
+                                                   </Popover>
+                                                   <FormMessage className="col-span-3" />
+                                                </FormItem>
+                                             )}
+                                          />
+
+                                          <div className="flex justify-end">
+                                             <Button
+                                                className="rounded-3xl mt-2 text-right"
+                                                type="submit"
+                                             >
+                                                Save change
+                                             </Button>
+                                          </div>
+                                       </form>
+                                    </Form>
+                                 </div>
+                              </div>
+                           </PopoverContent>
+                        </Popover>
+                     </div>
+                  ))}
+               </div>
+            </ScrollArea>
+         </AppCardContent>
       </div>
    );
 }
