@@ -1,0 +1,104 @@
+@import '../../../components/GlobalStyles/butlerFont.css';
+
+.wrapper {
+  padding-left: 15px;
+  border-left: 1px solid #ccc;
+}
+
+.heading {
+  font-size: 2.4rem;
+  font-family: 'Butler', sans-serif;
+  margin: 20px 0;
+  font-weight: 400;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thead {
+  background-color: #f8f9fa;
+  th {
+    font-size: 1.4rem;
+    padding: 12px 15px;
+    line-height: 1.5;
+    text-transform: uppercase;
+    color: #939393;
+    font-weight: 500;
+  }
+}
+
+.tbody {
+  color: #000 !important;
+}
+
+.btn-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button {
+  display: inline-block;
+  color: #fff;
+  font-weight: 500;
+  padding: 6px 16px;
+  font-size: 1.2rem;
+  background-color: #000;
+  border: none;
+  border-radius: 4px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #333;
+  }
+
+  &.review-button {
+    color: #000;
+    background-color: transparent;
+    border: 1px solid #000;
+    
+    &:hover {
+      color: #fff;
+      background-color: #000;
+      border-color: #000;
+    }
+  }
+}
+
+td.order {
+  color: #000;
+  text-align: center;
+}
+
+td.date {
+  color: #000;
+  text-align: center;
+}
+
+td.status {
+  color: #000;
+  text-align: center;
+}
+
+td.total {
+  color: #000;
+  text-align: center;
+}
+
+td.action {
+  color: #000;
+}

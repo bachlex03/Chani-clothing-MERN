@@ -387,9 +387,7 @@ export default function CreateProductAside() {
                               $200.99
                            </h2>
 
-                           <h2 className="mt-5 text-lg font-bold">
-                              Default Product Name
-                           </h2>
+                           <h2 className="mt-5 text-lg font-bold">{name}</h2>
 
                            <p className="text-sm mt-1 text-slate-300 font-medium">
                               Woman's Fashion

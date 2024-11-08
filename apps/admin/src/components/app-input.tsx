@@ -36,8 +36,6 @@ export default function AppInput(props: AppInputProps) {
                      placeholder={props.placeholder || ''}
                      {...field}
                      className="w-full dark:bg-five"
-                     accept="image/*"
-                     multiple
                      type={props.type || 'text'}
                      disabled={props.disabled}
                   />

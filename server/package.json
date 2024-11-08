@@ -1,0 +1,50 @@
+{
+  "name": "clothing-store-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "accesscontrol": "^2.2.1",
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.1.0",
+    "compression": "^1.7.4",
+    "connect-redis": "^7.1.1",
+    "cors": "^2.8.5",
+    "crypto-random-string": "^5.0.0",
+    "dateformat": "^5.0.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-handlebars": "^7.1.2",
+    "express-session": "^1.18.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mongodb": "^6.5.0",
+    "mongoose": "^8.3.0",
+    "mongoose-slug-generator": "^1.0.4",
+    "mongoose-slug-updater": "^3.3.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nanoid": "^5.0.6",
+    "nodemailer": "^6.9.13",
+    "nodemailer-express-handlebars": "^6.1.2",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "redis": "^4.6.13",
+    "socket.io": "^4.7.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "uuid": "^9.0.1",
+    "vn-payments": "^1.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
