@@ -163,6 +163,8 @@ export default function ProductDialog() {
    const [quantity, setQuantity] = useState(0);
    const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
+   console.log('ProductDialog', ProductDialog);
+
    const form = useForm<z.infer<typeof FormSchema>>({
       resolver: zodResolver(FormSchema),
       defaultValues: {

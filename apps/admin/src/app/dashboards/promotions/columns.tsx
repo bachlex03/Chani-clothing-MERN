@@ -21,15 +21,18 @@ import {
    DialogTrigger,
 } from '~/components/ui/dialog';
 import { useState } from 'react';
+import {
+   ICreatePromotionPayload,
+   IUpdatePromotionPayload,
+} from '~/types/promotion.type';
 
-export type Product = {
-   id: string;
-   product_code: string;
-   product_name: string;
-   category_name: string;
-   product_price: number;
-   product_stocks: number;
-   product_status: 'Published';
+export type Promotion = {
+   _id: string;
+   promotion_name: string;
+   promotion_value: number;
+   promotion_start_date: string;
+   promotion_end_date: string;
+   is_active: boolean;
 };
 
 enum Dialogs {
@@ -37,59 +40,69 @@ enum Dialogs {
    dialog2 = 'dialog2',
 }
 
-export const productColumns: ColumnDef<Product>[] = [
+export const categoryColumn: ColumnDef<Promotion>[] = [
    {
-      accessorKey: 'product_code',
-      header: 'Product Code',
+      accessorKey: '_id',
+      header: 'ID',
       cell: ({ row }) => (
          <div className="capitalize dark:text-blue-600 font-semibold">
-            {row.getValue('product_code')}
+            {row.getValue('_id')}
          </div>
       ),
    },
    {
-      accessorKey: 'product_name',
-      header: 'Product Name',
+      accessorKey: 'promotion_name',
+      header: 'Promotion Name',
       cell: ({ row }) => (
-         <div className="capitalize">{row.getValue('product_name')}</div>
+         <div className="capitalize">{row.getValue('promotion_name')}</div>
       ),
    },
    {
-      accessorKey: 'category_name',
-      header: 'Category',
+      accessorKey: 'promotion_value',
+      header: () => <div className="text-center">Discount rate</div>,
       cell: ({ row }) => (
-         <div className="capitalize">{row.getValue('category_name')}</div>
+         <div className="capitalize text-center">
+            {row.getValue('promotion_value')}
+         </div>
       ),
    },
    {
-      accessorKey: 'product_price',
-      header: 'Price',
+      accessorKey: 'promotion_start_date',
+      header: 'Start Date',
       cell: ({ row }) => {
-         const amount = parseFloat(row.getValue('product_price'));
+         const dateStr = row.getValue('promotion_start_date');
+         const date = new Date(dateStr as any);
+         const formattedDate = date.toLocaleDateString('en-GB');
 
-         // Format the amount as a dollar amount
-         const formatted = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-         }).format(amount);
-
-         return <div className="text-left font-medium">{formatted}</div>;
+         return <div className="">{formattedDate.toString()}</div>;
       },
    },
    {
-      accessorKey: 'product_stocks',
-      header: 'Stock',
+      accessorKey: 'promotion_end_date',
+      header: 'End Date',
       cell: ({ row }) => {
-         const stock = parseFloat(row.getValue('product_stocks'));
+         const dateStr = row.getValue('promotion_end_date');
+         const date = new Date(dateStr as any);
+         const formattedDate = date.toLocaleDateString('en-GB');
 
-         return <div className="text-left font-medium">{stock}</div>;
+         return <div className="">{formattedDate.toString()}</div>;
       },
    },
    {
-      accessorKey: 'product_status',
-      header: 'Status',
+      accessorKey: 'is_active',
+      header: () => <div className="text-center">Status</div>,
       cell: ({ row }) => (
-         <div className="capitalize">{row.getValue('product_status')}</div>
+         <div className="capitalize text-center">
+            <span
+               className={`text-xs px-2 py-1 rounded-lg text-center ${
+                  row.getValue('is_active')
+                     ? 'bg-green-500/50'
+                     : 'bg-red-500/50'
+               }`}
+            >
+               {row.getValue('is_active') ? 'Active' : 'Inactive'}
+            </span>
+         </div>
       ),
    },
    {
@@ -99,6 +112,15 @@ export const productColumns: ColumnDef<Product>[] = [
       cell: ({ row }) => {
          const product = row.original;
          const [dialog, setDialog] = useState(Dialogs.dialog1);
+
+         const data: IUpdatePromotionPayload = {
+            id: row.getValue('_id'),
+            name: row.getValue('promotion_name'),
+            value: row.getValue('promotion_value'),
+            startDate: row.getValue('promotion_start_date'),
+            endDate: row.getValue('promotion_end_date'),
+            // categoryId: row.getValue('category_id'),
+         };
 
          return (
             <Dialog>
@@ -144,7 +166,7 @@ export const productColumns: ColumnDef<Product>[] = [
                         <DialogTitle className="text-sm">
                            Are you sure want to delete this Item ?
                            <p className="text-center mt-5 text-xl">
-                              Sunflower Jumpsuit
+                              {row.getValue('promotion_name')}
                            </p>
                         </DialogTitle>
                      </DialogHeader>

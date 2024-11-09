@@ -1,4 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
+'use client';
+
 import { z } from 'zod';
 import { Button } from './ui/button';
 import {

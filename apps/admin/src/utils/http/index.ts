@@ -13,32 +13,34 @@ export const get = async (
 ): Promise<IApiResponse | ApiError> => {
    const serializedUrl = serializeUrl(url, params);
 
-   const response = await fetch(baseUrl + serializedUrl, {
-      method: 'GET',
-      headers: {
-         'Content-Type': 'application/json',
-         ...(Cookies.get('access-token')
-            ? {
-                 Authorization: `Bearer ${Cookies.get('access-token')}`,
-              }
-            : {}),
-         ...options,
-      },
-   });
+   try {
+      const response = await fetch(baseUrl + serializedUrl, {
+         method: 'GET',
+         headers: {
+            'Content-Type': 'application/json',
+            ...(Cookies.get('access-token')
+               ? {
+                    Authorization: `Bearer ${Cookies.get('access-token')}`,
+                 }
+               : {}),
+            ...options,
+         },
+      });
 
-   if (!response.ok) {
-      const errorData = await response.json();
-      return new ApiError(
-         errorData.status,
-         errorData.code,
-         errorData.message,
-         errorData,
-      );
+      if (!response.ok) {
+         const errorData = await response.json();
+         return new ApiError(
+            errorData.status,
+            errorData.code,
+            errorData.message,
+            errorData,
+         );
+      }
+
+      return (await response.json()) as IApiResponse;
+   } catch {
+      return new ApiError('500', 500, 'Internal server error');
    }
-
-   const resJson = (await response.json()) as IApiResponse;
-
-   return resJson;
 };
 
 export const post = async <IRequest>(
@@ -61,6 +63,39 @@ export const post = async <IRequest>(
             ...options,
          },
          body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+         const errorData = await response.json();
+         return new ApiError(
+            errorData.status,
+            errorData.code,
+            errorData.message,
+            errorData,
+         );
+      }
+
+      return (await response.json()) as IApiResponse;
+   } catch {
+      return new ApiError('500', 500, 'Internal server error');
+   }
+};
+
+export const remove = async (url: string, options: IHeaderOptions = {}) => {
+   const serializedUrl = serializeUrl(url);
+
+   try {
+      const response = await fetch(baseUrl + serializedUrl, {
+         method: 'DELETE',
+         headers: {
+            'Content-Type': 'application/json',
+            ...(Cookies.get('access-token')
+               ? {
+                    Authorization: `Bearer ${Cookies.get('access-token')}`,
+                 }
+               : {}),
+            ...options,
+         },
       });
 
       if (!response.ok) {

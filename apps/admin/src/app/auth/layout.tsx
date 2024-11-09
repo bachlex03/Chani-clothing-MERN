@@ -1,14 +1,8 @@
 import type { Metadata } from 'next';
 import '~/styles/globals.css';
-import { Roboto } from 'next/font/google';
 import Image from 'next/image';
 import images from '../../../public/images';
-
-const roboto = Roboto({
-   subsets: ['latin'],
-   variable: '--font-roboto',
-   weight: ['100', '300', '400', '500', '700', '900'],
-});
+import { createContext } from 'react';
 
 export const metadata: Metadata = {
    title: 'Create Next App',
@@ -27,7 +21,6 @@ export default function AuthLayout({
                <Image src={images.loginBg} alt="project" fill />
             </div>
          </div>
-
          <div className="w-[30%]">{children}</div>
       </div>
    );
