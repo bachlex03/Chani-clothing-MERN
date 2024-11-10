@@ -41,14 +41,9 @@ export const PromotionDataTable = () => {
    const table = useReactTable({
       data: promotions,
       columns: promotionColumns,
-      // onSortingChange: setSorting,
-      // onColumnFiltersChange: setColumnFilters,
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
-      // getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
-      // onColumnVisibilityChange: setColumnVisibility,
-      // onRowSelectionChange: setRowSelection,
       state: {
          pagination: {
             pageSize,

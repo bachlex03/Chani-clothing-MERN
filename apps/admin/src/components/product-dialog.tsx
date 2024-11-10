@@ -280,29 +280,6 @@ export default function ProductDialog() {
                                  </div>
                               </div>
 
-                              <div className="grid grid-cols-2">
-                                 <div>
-                                    <h2 className="mb-5 text-sm font-semibold">
-                                       Color Variants
-                                    </h2>
-                                    <AppColorCheckbox
-                                       name="color"
-                                       form={form as any}
-                                    />
-                                 </div>
-
-                                 <div>
-                                    <h2 className="mb-5 text-sm font-semibold">
-                                       Size Variants
-                                    </h2>
-
-                                    <AppSizeCheckbox
-                                       name="size"
-                                       form={form as any}
-                                    />
-                                 </div>
-                              </div>
-
                               <div>
                                  <AppTextArea
                                     name="description"

@@ -29,8 +29,6 @@ export const createPromotion = async (payload: ICreatePromotionPayload) => {
 export const deletePromotion = async (id: string) => {
    const result = await remove(`promotions/${id}`);
 
-   console.log('result', result);
-
    if (result instanceof ApiError) {
       return result as ApiError;
    }

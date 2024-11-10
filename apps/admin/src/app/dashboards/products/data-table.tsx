@@ -1,11 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { ChevronDownIcon } from '@radix-ui/react-icons';
 import {
-   ColumnFiltersState,
-   SortingState,
-   VisibilityState,
    flexRender,
    getCoreRowModel,
    getFilteredRowModel,
@@ -14,13 +11,6 @@ import {
    useReactTable,
 } from '@tanstack/react-table';
 
-import { Button } from '~/components/ui/button';
-import {
-   DropdownMenu,
-   DropdownMenuCheckboxItem,
-   DropdownMenuContent,
-   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
 import { Input } from '~/components/ui/input';
 import {
    Table,
@@ -31,8 +21,13 @@ import {
    TableRow,
 } from '~/components/ui/table';
 import { productColumns, Product } from './columns';
-import { useState } from 'react';
-import { ILoginPayload } from '~/types/auth/login.type';
+import { useEffect, useState } from 'react';
+import * as productServices from '~/services/products.service';
+import { ApiError } from '~/common/errors/Api.error';
+import { IProductResponse } from '~/types/product.type';
+import { toast } from '~/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { Button } from '~/components/ui/button';
 
 const data: Product[] = [
    {
@@ -47,24 +42,57 @@ const data: Product[] = [
 ];
 
 export const ProductDataTable = () => {
+   const router = useRouter();
+   const [products, setProducts] = useState<IProductResponse[]>([]);
+
+   const [pageIndex, setPageIndex] = useState(0);
+   const [pageSize] = useState(5);
+
+   console.log('products', products);
+
    const table = useReactTable({
-      data,
+      data: products,
       columns: productColumns,
-      // onSortingChange: setSorting,
-      // onColumnFiltersChange: setColumnFilters,
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
-      // onColumnVisibilityChange: setColumnVisibility,
-      // onRowSelectionChange: setRowSelection,
-      // state: {
-      //    sorting,
-      //    columnFilters,
-      //    columnVisibility,
-      //    rowSelection,
-      // },
+      state: {
+         pagination: {
+            pageSize,
+            pageIndex,
+         },
+      },
    });
+
+   useEffect(() => {
+      const getAllProducts = async () => {
+         const result = (await productServices.getAllProducts()) as
+            | IProductResponse[]
+            | ApiError
+            | null;
+
+         if (result instanceof ApiError) {
+            console.log(result.errorResponse);
+
+            toast({
+               variant: 'destructive',
+               title: `Account ${result.errorResponse?.message}`,
+               description: `There was a problem with your request. ${result.errorResponse?.code}`,
+            });
+
+            router.push('/auth/login');
+
+            return;
+         }
+
+         if (result) {
+            setProducts(result as IProductResponse[]);
+         }
+      };
+
+      getAllProducts();
+   }, []);
 
    return (
       <div className="w-full">
@@ -134,6 +162,32 @@ export const ProductDataTable = () => {
                   )}
                </TableBody>
             </Table>
+         </div>
+         <div className="flex items-center justify-end py-4 space-x-2">
+            <Button
+               variant="outline"
+               size="sm"
+               onClick={() => {
+                  if (table.getCanPreviousPage()) {
+                     setPageIndex(pageIndex - 1);
+                  }
+               }}
+               disabled={!table.getCanPreviousPage()}
+            >
+               Previous
+            </Button>
+            <Button
+               variant="outline"
+               size="sm"
+               onClick={() => {
+                  if (table.getCanNextPage()) {
+                     setPageIndex(pageIndex + 1);
+                  }
+               }}
+               disabled={!table.getCanNextPage()}
+            >
+               Next
+            </Button>
          </div>
       </div>
    );

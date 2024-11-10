@@ -25,15 +25,8 @@ import {
    DialogTitle,
    DialogTrigger,
 } from '~/components/ui/dialog';
-import { useRef, useState } from 'react';
-import { IUpdatePromotionPayload } from '~/types/promotion.type';
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-} from '~/components/ui/form';
+import { useState } from 'react';
+import { Form, FormField } from '~/components/ui/form';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,7 +35,6 @@ import { toast } from '~/hooks/use-toast';
 import * as promotionServices from '~/services/promotions.service';
 import Loading from '~/components/loading';
 import { ApiError } from '~/common/errors/Api.error';
-import { set } from 'date-fns';
 import PromotionDialog from '~/components/promotion.dialog';
 
 export type Promotion = {
@@ -181,14 +173,14 @@ export const promotionColumns: ColumnDef<Promotion>[] = [
             });
          };
 
-         const data: IUpdatePromotionPayload = {
-            id: row.getValue('_id'),
-            name: row.getValue('promotion_name'),
-            value: row.getValue('promotion_value'),
-            startDate: row.getValue('promotion_start_date'),
-            endDate: row.getValue('promotion_end_date'),
-            // categoryId: row.getValue('category_id'),
-         };
+         // const data: IUpdatePromotionPayload = {
+         //    id: row.getValue('_id'),
+         //    name: row.getValue('promotion_name'),
+         //    value: row.getValue('promotion_value'),
+         //    startDate: row.getValue('promotion_start_date'),
+         //    endDate: row.getValue('promotion_end_date'),
+         //    // categoryId: row.getValue('category_id'),
+         // };
 
          return (
             <div>

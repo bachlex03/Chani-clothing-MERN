@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-no-undef */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/rules-of-hooks */
 import {
    DropdownMenu,
    DropdownMenuContent,
@@ -6,10 +9,9 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 
 import { Button } from '~/components/ui/button';
-import { Checkbox } from '~/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import ProductDialog from '~/components/product-dialog';
 import {
@@ -21,6 +23,16 @@ import {
    DialogTrigger,
 } from '~/components/ui/dialog';
 import { useState } from 'react';
+import { IProductResponse } from '~/types/product.type';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from '~/hooks/use-toast';
+import * as productServices from '~/services/products.service';
+import { ApiError } from '~/common/errors/Api.error';
+import { Form, FormField } from '~/components/ui/form';
+import { Input } from '~/components/ui/input';
+import Loading from '~/components/loading';
 
 export type Product = {
    id: string;
@@ -37,12 +49,16 @@ enum Dialogs {
    dialog2 = 'dialog2',
 }
 
-export const productColumns: ColumnDef<Product>[] = [
+const deleteProductSchema = z.object({
+   id: z.string().min(1),
+});
+
+export const productColumns: ColumnDef<IProductResponse>[] = [
    {
       accessorKey: 'product_code',
       header: 'Product Code',
       cell: ({ row }) => (
-         <div className="capitalize dark:text-blue-600 font-semibold">
+         <div className="font-semibold capitalize dark:text-blue-600">
             {row.getValue('product_code')}
          </div>
       ),
@@ -57,9 +73,14 @@ export const productColumns: ColumnDef<Product>[] = [
    {
       accessorKey: 'category_name',
       header: 'Category',
-      cell: ({ row }) => (
-         <div className="capitalize">{row.getValue('category_name')}</div>
-      ),
+      cell: ({ row }) => {
+         const product = row.original;
+         return (
+            <div className="capitalize">
+               {product.product_category.category_name}
+            </div>
+         );
+      },
    },
    {
       accessorKey: 'product_price',
@@ -73,23 +94,35 @@ export const productColumns: ColumnDef<Product>[] = [
             currency: 'USD',
          }).format(amount);
 
-         return <div className="text-left font-medium">{formatted}</div>;
+         return <div className="font-medium text-left">{formatted}</div>;
       },
    },
    {
       accessorKey: 'product_stocks',
       header: 'Stock',
       cell: ({ row }) => {
-         const stock = parseFloat(row.getValue('product_stocks'));
-
-         return <div className="text-left font-medium">{stock}</div>;
+         return (
+            <div className="font-medium text-left">
+               {row.original.product_stocks}
+            </div>
+         );
       },
    },
    {
       accessorKey: 'product_status',
-      header: 'Status',
+      header: () => <div className="text-center">Status</div>,
       cell: ({ row }) => (
-         <div className="capitalize">{row.getValue('product_status')}</div>
+         <div className="text-center capitalize">
+            <span
+               className={`text-xs px-2 py-1 rounded-lg text-center ${
+                  row.getValue('product_status')
+                     ? 'bg-green-500/50'
+                     : 'bg-red-500/50'
+               }`}
+            >
+               {row.getValue('product_status')}
+            </span>
+         </div>
       ),
    },
    {
@@ -98,15 +131,65 @@ export const productColumns: ColumnDef<Product>[] = [
       header: () => <div className="text-left">Actions</div>,
       cell: ({ row }) => {
          const product = row.original;
-         const [dialog, setDialog] = useState(Dialogs.dialog1);
+         const [dialog, setDialog] = useState<Dialogs | null>(null);
+         const [open, setOpen] = useState(false);
+         const [loading, setLoading] = useState(false);
+
+         const deleteForm = useForm<z.infer<typeof deleteProductSchema>>({
+            resolver: zodResolver(deleteProductSchema),
+            defaultValues: {
+               id: '',
+            },
+         });
+
+         const onDelete = async (data: z.infer<typeof deleteProductSchema>) => {
+            setLoading(true);
+
+            toast({
+               title: 'Delete Payload',
+               className: 'text-white dark:text-white',
+               description: (
+                  <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                     <code className="text-white">
+                        {JSON.stringify(data, null, 2)}
+                     </code>
+                  </pre>
+               ),
+            });
+
+            const result = await productServices.removeProductById(data.id);
+
+            if (result instanceof ApiError) {
+               setLoading(false);
+               return toast({
+                  title: 'Delete Error',
+                  description: result.message,
+               });
+            }
+
+            setOpen(false);
+            setLoading(false);
+
+            toast({
+               title: 'Delete Success',
+               description: 'Promotion deleted successfully',
+            });
+         };
 
          return (
-            <Dialog>
+            <Dialog
+               open={open}
+               onOpenChange={(isOpen) => {
+                  if (!isOpen) {
+                     setOpen(false);
+                  }
+               }}
+            >
                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                     <Button variant="ghost" className="h-8 w-8 p-0">
+                     <Button variant="ghost" className="w-8 h-8 p-0">
                         <span className="sr-only">Open menu</span>
-                        <DotsHorizontalIcon className="h-4 w-4" />
+                        <DotsHorizontalIcon className="w-4 h-4" />
                      </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -120,6 +203,7 @@ export const productColumns: ColumnDef<Product>[] = [
                         asChild
                         onClick={() => {
                            setDialog(Dialogs.dialog1);
+                           setOpen(true);
                         }}
                      >
                         <DropdownMenuItem>Edit</DropdownMenuItem>
@@ -129,6 +213,9 @@ export const productColumns: ColumnDef<Product>[] = [
                         asChild
                         onClick={() => {
                            setDialog(Dialogs.dialog2);
+                           setOpen(true);
+
+                           deleteForm.setValue('id', row.original._id);
                         }}
                      >
                         <DropdownMenuItem>Delete</DropdownMenuItem>
@@ -136,27 +223,56 @@ export const productColumns: ColumnDef<Product>[] = [
                   </DropdownMenuContent>
                </DropdownMenu>
 
-               {dialog === Dialogs.dialog1 ? (
-                  <ProductDialog />
-               ) : (
-                  <DialogContent className="rounded-lg">
-                     <DialogHeader className="flex flex-col mt-5 items-center">
-                        <DialogTitle className="text-sm">
-                           Are you sure want to delete this Item ?
-                           <p className="text-center mt-5 text-xl">
-                              Sunflower Jumpsuit
-                           </p>
-                        </DialogTitle>
-                     </DialogHeader>
-                     <div className="flex justify-center mt-5">
-                        <Button className="mr-5 dark:bg-slate-300">Yes</Button>
-                        <Button className="dark:bg-primary dark:text-slate-200 dark:hover:bg-slate-700">
-                           Cancel
-                        </Button>
-                     </div>
-                     <DialogFooter></DialogFooter>
-                  </DialogContent>
-               )}
+               {dialog === Dialogs.dialog1 ? <ProductDialog /> : null}
+
+               {dialog === Dialogs.dialog2 ? (
+                  <div>
+                     {loading && <Loading className="bg-five/50" />}
+
+                     <DialogContent className="rounded-lg">
+                        <DialogHeader className="flex flex-col items-center mt-5">
+                           <DialogTitle className="text-sm">
+                              Are you sure want to delete this Item ?
+                              <p className="mt-5 text-xl text-center">
+                                 {product.product_name}
+                              </p>
+                           </DialogTitle>
+                        </DialogHeader>
+                        <div className="flex justify-center mt-5">
+                           <Form {...deleteForm}>
+                              <form
+                                 onSubmit={deleteForm.handleSubmit(onDelete)}
+                              >
+                                 <FormField
+                                    name="id"
+                                    control={deleteForm.control}
+                                    render={({ field }) => (
+                                       <Input {...field} type="hidden" />
+                                    )}
+                                 />
+                                 <Button
+                                    type="submit"
+                                    className="mr-5 dark:bg-slate-300"
+                                 >
+                                    Yes
+                                 </Button>
+                                 <Button
+                                    type="button"
+                                    className="dark:bg-primary dark:text-slate-200 dark:hover:bg-slate-700"
+                                    onClick={() => {
+                                       setDialog(null);
+                                       setOpen(false);
+                                    }}
+                                 >
+                                    Cancel
+                                 </Button>
+                              </form>
+                           </Form>
+                        </div>
+                        <DialogFooter></DialogFooter>
+                     </DialogContent>
+                  </div>
+               ) : null}
             </Dialog>
          );
       },
