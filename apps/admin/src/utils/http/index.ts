@@ -1,33 +1,46 @@
 import { IApiResponse } from '~/types/api-response.type';
 import { serializeUrl } from '../serializer';
 import { IHeaderOptions } from './header-options.interface';
-import { IBaseError } from '~/types/errors/base.error';
 import { ApiError } from '~/common/errors/Api.error';
-const Cookies = require('js-cookie');
+import Cookies from 'js-cookie';
 
 const baseUrl = 'http://localhost:3001/api/v1/';
 
-export const get = async <IResponse>(
+export const get = async (
    url: string,
    params: Record<string, string> = {},
    options: IHeaderOptions = {},
-) => {
+): Promise<IApiResponse | ApiError> => {
    const serializedUrl = serializeUrl(url, params);
 
-   const response = await fetch(baseUrl + serializedUrl, {
-      method: 'GET',
-      headers: {
-         'Content-Type': 'application/json',
-         ...(Cookies.get('access-token')
-            ? {
-                 Authorization: `Bearer ${Cookies.get('access-token')}`,
-              }
-            : {}),
-         ...options,
-      },
-   });
+   try {
+      const response = await fetch(baseUrl + serializedUrl, {
+         method: 'GET',
+         headers: {
+            'Content-Type': 'application/json',
+            ...(Cookies.get('access-token')
+               ? {
+                    Authorization: `Bearer ${Cookies.get('access-token')}`,
+                 }
+               : {}),
+            ...options,
+         },
+      });
 
-   return (await response.json()) as IResponse;
+      if (!response.ok) {
+         const errorData = await response.json();
+         return new ApiError(
+            errorData.status,
+            errorData.code,
+            errorData.message,
+            errorData,
+         );
+      }
+
+      return (await response.json()) as IApiResponse;
+   } catch {
+      return new ApiError('500', 500, 'Internal server error');
+   }
 };
 
 export const post = async <IRequest>(
@@ -63,7 +76,40 @@ export const post = async <IRequest>(
       }
 
       return (await response.json()) as IApiResponse;
-   } catch (error) {
+   } catch {
+      return new ApiError('500', 500, 'Internal server error');
+   }
+};
+
+export const remove = async (url: string, options: IHeaderOptions = {}) => {
+   const serializedUrl = serializeUrl(url);
+
+   try {
+      const response = await fetch(baseUrl + serializedUrl, {
+         method: 'DELETE',
+         headers: {
+            'Content-Type': 'application/json',
+            ...(Cookies.get('access-token')
+               ? {
+                    Authorization: `Bearer ${Cookies.get('access-token')}`,
+                 }
+               : {}),
+            ...options,
+         },
+      });
+
+      if (!response.ok) {
+         const errorData = await response.json();
+         return new ApiError(
+            errorData.status,
+            errorData.code,
+            errorData.message,
+            errorData,
+         );
+      }
+
+      return (await response.json()) as IApiResponse;
+   } catch {
       return new ApiError('500', 500, 'Internal server error');
    }
 };

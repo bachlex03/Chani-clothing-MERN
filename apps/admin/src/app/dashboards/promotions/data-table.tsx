@@ -30,41 +30,72 @@ import {
    TableHeader,
    TableRow,
 } from '~/components/ui/table';
-import { productColumns, Product } from './columns';
-import { useState } from 'react';
+import { categoryColumn, Promotion } from './columns';
+import { useEffect, useState } from 'react';
 import { ILoginPayload } from '~/types/auth/login.type';
+import * as promotionServices from '~/services/promotions.service';
+import { IGetAllPromotionsResponse } from '~/types/categories/get-all.type';
+import { ApiError } from '~/common/errors/Api.error';
+import { toast } from '~/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
-const data: Product[] = [
-   {
-      id: '1',
-      product_code: '#LVCOM-715920526',
-      product_name: 'Sunflower Jumpsuit',
-      category_name: 'Maxi',
-      product_price: 100,
-      product_stocks: 270,
-      product_status: 'Published',
-   },
-];
+export const PromotionDataTable = () => {
+   const router = useRouter();
 
-export const ProductDataTable = () => {
+   const [promotions, setPromotions] = useState<IGetAllPromotionsResponse[]>(
+      [],
+   );
+
+   const [pageIndex, setPageIndex] = useState(0);
+   const [pageSize] = useState(6);
+
    const table = useReactTable({
-      data,
-      columns: productColumns,
+      data: promotions,
+      columns: categoryColumn,
       // onSortingChange: setSorting,
       // onColumnFiltersChange: setColumnFilters,
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
+      // getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
       // onColumnVisibilityChange: setColumnVisibility,
       // onRowSelectionChange: setRowSelection,
-      // state: {
-      //    sorting,
-      //    columnFilters,
-      //    columnVisibility,
-      //    rowSelection,
-      // },
+      state: {
+         pagination: {
+            pageSize,
+            pageIndex,
+         },
+      },
    });
+
+   useEffect(() => {
+      async function getAllPromotions() {
+         const result = (await promotionServices.getAllPromotions()) as
+            | IGetAllPromotionsResponse[]
+            | ApiError
+            | null;
+
+         if (result instanceof ApiError) {
+            console.log(result.errorResponse);
+
+            toast({
+               variant: 'destructive',
+               title: `Account ${result.errorResponse?.message}`,
+               description: `There was a problem with your request. ${result.errorResponse?.code}`,
+            });
+
+            router.push('/auth/login');
+
+            return;
+         }
+
+         if (result && 'data' in result) {
+            setPromotions(result.data as IGetAllPromotionsResponse[]);
+         }
+      }
+
+      getAllPromotions();
+   }, []);
 
    return (
       <div className="w-full">
@@ -73,12 +104,12 @@ export const ProductDataTable = () => {
                placeholder="Filter by name..."
                value={
                   (table
-                     .getColumn('product_name')
+                     .getColumn('promotion_name')
                      ?.getFilterValue() as string) ?? ''
                }
                onChange={(event) =>
                   table
-                     .getColumn('product_name')
+                     .getColumn('promotion_name')
                      ?.setFilterValue(event.target.value)
                }
                className="max-w-sm"
@@ -125,7 +156,7 @@ export const ProductDataTable = () => {
                   ) : (
                      <TableRow>
                         <TableCell
-                           colSpan={productColumns.length}
+                           colSpan={categoryColumn.length}
                            className="h-24 text-center"
                         >
                            No results.
@@ -134,6 +165,32 @@ export const ProductDataTable = () => {
                   )}
                </TableBody>
             </Table>
+         </div>
+         <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+               variant="outline"
+               size="sm"
+               onClick={() => {
+                  if (table.getCanPreviousPage()) {
+                     setPageIndex(pageIndex - 1);
+                  }
+               }}
+               disabled={!table.getCanPreviousPage()}
+            >
+               Previous
+            </Button>
+            <Button
+               variant="outline"
+               size="sm"
+               onClick={() => {
+                  if (table.getCanNextPage()) {
+                     setPageIndex(pageIndex + 1);
+                  }
+               }}
+               disabled={!table.getCanNextPage()}
+            >
+               Next
+            </Button>
          </div>
       </div>
    );

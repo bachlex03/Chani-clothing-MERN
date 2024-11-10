@@ -33,6 +33,9 @@ const config: Config = {
             four: '#0f1824',
             five: '#132337',
          },
+         animation: {
+            'spin-slow': 'spin 1.5s linear infinite', // Adjust 3s to your preferred speed
+         },
       },
    },
    plugins: [require('tailwindcss-animate')],

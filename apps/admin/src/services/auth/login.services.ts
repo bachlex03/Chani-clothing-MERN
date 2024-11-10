@@ -1,6 +1,6 @@
 import { ApiError } from '~/common/errors/Api.error';
 import { ILoginPayload, ILoginResponse } from '~/types/auth/login.type';
-import { get, post } from '~/utils/http';
+import { post } from '~/utils/http';
 
 export const login = async (
    payload: ILoginPayload,
