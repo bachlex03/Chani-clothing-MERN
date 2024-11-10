@@ -3,8 +3,9 @@ import { IGetAllPromotionsResponse } from '~/types/categories/get-all.type';
 import {
    ICreatePromotionPayload,
    ICreatePromotionResponse,
+   IUpdatePromotionPayload,
 } from '~/types/promotion.type';
-import { get, post } from '~/utils/http';
+import { get, post, put, remove } from '~/utils/http';
 
 export const getAllPromotions = async () => {
    const result = await get('promotions');
@@ -23,4 +24,31 @@ export const createPromotion = async (payload: ICreatePromotionPayload) => {
    }
 
    return result.data as ICreatePromotionResponse;
+};
+
+export const deletePromotion = async (id: string) => {
+   const result = await remove(`promotions/${id}`);
+
+   console.log('result', result);
+
+   if (result instanceof ApiError) {
+      return result as ApiError;
+   }
+
+   return result.data;
+};
+
+export const updatePromotion = async (
+   id: string = '',
+   payload: IUpdatePromotionPayload,
+) => {
+   const result = await put(`promotions/${id}`, payload);
+
+   console.log('result', result);
+
+   if (result instanceof ApiError) {
+      return result as ApiError;
+   }
+
+   return result.data;
 };

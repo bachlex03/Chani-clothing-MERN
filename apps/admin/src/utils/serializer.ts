@@ -6,6 +6,10 @@ export const serializeUrl = (
       url = url.slice(1);
    }
 
+   if (url.endsWith('/')) {
+      url = url.slice(0, -1);
+   }
+
    const urlParams = new URLSearchParams();
 
    for (const key in Object.keys(params)) {

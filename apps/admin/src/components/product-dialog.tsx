@@ -161,9 +161,6 @@ export default function ProductDialog() {
    const [description, setDescription] = useState('');
    const [price, SetPrice] = useState(0);
    const [quantity, setQuantity] = useState(0);
-   const triggerBtnRef = useRef<HTMLButtonElement>(null);
-
-   console.log('ProductDialog', ProductDialog);
 
    const form = useForm<z.infer<typeof FormSchema>>({
       resolver: zodResolver(FormSchema),
@@ -202,7 +199,7 @@ export default function ProductDialog() {
                         <Form {...form}>
                            <form
                               onSubmit={form.handleSubmit(onSubmit)}
-                              className=" w-full space-y-6"
+                              className="w-full space-y-6 "
                            >
                               <div>
                                  <AppInput
@@ -307,15 +304,6 @@ export default function ProductDialog() {
                               </div>
 
                               <div>
-                                 {/* <AppInput
-                                       name="images"
-                                       form={form as any}
-                                       label="Images"
-                                       type="file"
-                                    /> */}
-                              </div>
-
-                              <div>
                                  <AppTextArea
                                     name="description"
                                     label="Product description"
@@ -366,8 +354,8 @@ export default function ProductDialog() {
 
                <div className="w-[27%]">
                   <ScrollArea className="h-[97%] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
-                     <div className="w-full px-5 flex flex-col items-center">
-                        <h2 className="font-bold text-xl">
+                     <div className="flex flex-col items-center w-full px-5">
+                        <h2 className="text-xl font-bold">
                            Product card preview
                         </h2>
 
@@ -381,19 +369,19 @@ export default function ProductDialog() {
                            </div>
                         </div>
 
-                        <h2 className="mt-5 text-lg font-semibold self-start">
+                        <h2 className="self-start mt-5 text-lg font-semibold">
                            ${price || 200.99}
                         </h2>
 
-                        <h2 className="mt-2 text-lg font-bold self-start">
+                        <h2 className="self-start mt-2 text-lg font-bold">
                            {name || 'Default product name'}
                         </h2>
 
-                        <p className="text-sm mt-1 text-slate-300 font-medium self-start">
+                        <p className="self-start mt-1 text-sm font-medium text-slate-300">
                            Woman's Fashion
                         </p>
 
-                        <p className="text-sm mt-5 dark:text-slate-400 self-start">
+                        <p className="self-start mt-5 text-sm dark:text-slate-400">
                            {description ||
                               'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis odio voluptatibus,tenetur totam obcaecati minima tempora nul porro! Fuga, id'}
                         </p>

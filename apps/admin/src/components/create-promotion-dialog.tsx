@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
    Popover,
    PopoverContent,
@@ -33,7 +34,7 @@ import {
 } from '~/components/ui/form';
 
 import { Button } from '~/components/ui/button';
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import { Input } from '~/components/ui/input';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -43,6 +44,7 @@ import { ApiError } from '~/common/errors/Api.error';
 import * as promotionServices from '~/services/promotions.service';
 import { toast } from '~/hooks/use-toast';
 import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import Loading from '~/components/loading';
 
 export const CreatePromotionSchema = z.object({
    name: z.string().min(3),
@@ -60,6 +62,8 @@ export const CreatePromotionSchema = z.object({
          required_error: 'A date of birth is required.',
       })
       .transform((date) => {
+         console.log(date);
+
          const newDate = new Date(date);
 
          const isoFormatWithOffset = newDate
@@ -91,7 +95,7 @@ export type PromotionProps = {
 };
 
 export default function CreatePromotionDialog(props: PromotionProps) {
-   const [loading, setLoading] = useState(true);
+   const [loading, setLoading] = useState(false);
 
    const form = useForm<z.infer<typeof CreatePromotionSchema>>({
       resolver: zodResolver(CreatePromotionSchema),
@@ -139,9 +143,10 @@ export default function CreatePromotionDialog(props: PromotionProps) {
 
    return (
       <div>
+         {loading && <Loading className="bg-five/50" />}
          <Dialog>
             <DialogTrigger asChild>
-               <Button className="dark:bg-white dark:text-four font-semibold py-2 px-3 text-sm rounded-md">
+               <Button className="px-3 py-2 text-sm font-semibold rounded-md dark:bg-white dark:text-four">
                   + Add new
                </Button>
             </DialogTrigger>
@@ -151,21 +156,21 @@ export default function CreatePromotionDialog(props: PromotionProps) {
                      Create new promotion
                   </DialogTitle>
                </DialogHeader>
-               <div className="bg-five rounded-md p-5">
+               <div className="p-5 rounded-md bg-five">
                   <Form {...form}>
                      <form onSubmit={form.handleSubmit(onCreate)}>
                         <FormField
                            control={form.control}
                            name="name"
                            render={({ field }) => (
-                              <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                              <FormItem className="grid items-center grid-cols-3 gap-4 mb-5">
                                  <FormLabel htmlFor="name">Name</FormLabel>
                                  <FormControl>
                                     <Input
                                        id="name"
                                        placeholder="Name"
                                        {...field}
-                                       className="col-span-2 h-8"
+                                       className="h-8 col-span-2"
                                     />
                                  </FormControl>
                                  <FormMessage className="col-span-3" />
@@ -177,7 +182,7 @@ export default function CreatePromotionDialog(props: PromotionProps) {
                            control={form.control}
                            name="value"
                            render={({ field }) => (
-                              <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                              <FormItem className="grid items-center grid-cols-3 gap-4 mb-5">
                                  <FormLabel htmlFor="discountRate">
                                     Discount rate
                                  </FormLabel>
@@ -187,7 +192,7 @@ export default function CreatePromotionDialog(props: PromotionProps) {
                                        placeholder="rate %"
                                        type="number"
                                        {...field}
-                                       className="col-span-2 h-8"
+                                       className="h-8 col-span-2"
                                     />
                                  </FormControl>
                                  <FormMessage className="col-span-3" />
@@ -199,7 +204,7 @@ export default function CreatePromotionDialog(props: PromotionProps) {
                            control={form.control}
                            name="startDate"
                            render={({ field }) => (
-                              <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                              <FormItem className="grid items-center grid-cols-3 gap-4 mb-5">
                                  <FormLabel>Start From</FormLabel>
                                  <Popover>
                                     <PopoverTrigger asChild>
@@ -217,7 +222,7 @@ export default function CreatePromotionDialog(props: PromotionProps) {
                                              ) : (
                                                 <span>Pick a date</span>
                                              )}
-                                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                             <CalendarIcon className="w-4 h-4 ml-auto opacity-50" />
                                           </Button>
                                        </FormControl>
                                     </PopoverTrigger>
@@ -242,7 +247,7 @@ export default function CreatePromotionDialog(props: PromotionProps) {
                            control={form.control}
                            name="endDate"
                            render={({ field }) => (
-                              <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                              <FormItem className="grid items-center grid-cols-3 gap-4 mb-5">
                                  <FormLabel>End to</FormLabel>
                                  <Popover>
                                     <PopoverTrigger asChild>
@@ -260,7 +265,7 @@ export default function CreatePromotionDialog(props: PromotionProps) {
                                              ) : (
                                                 <span>Pick a date</span>
                                              )}
-                                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                             <CalendarIcon className="w-4 h-4 ml-auto opacity-50" />
                                           </Button>
                                        </FormControl>
                                     </PopoverTrigger>
@@ -285,7 +290,7 @@ export default function CreatePromotionDialog(props: PromotionProps) {
                            control={form.control}
                            name="categoryId"
                            render={({ field }) => (
-                              <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                              <FormItem className="grid items-center grid-cols-3 gap-4 mb-5">
                                  <FormLabel>For Category</FormLabel>
                                  <Popover>
                                     <PopoverTrigger asChild>

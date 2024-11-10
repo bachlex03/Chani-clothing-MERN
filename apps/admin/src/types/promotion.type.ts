@@ -12,6 +12,15 @@ export interface IUpdatePromotionPayload {
    value: number;
    startDate: string;
    endDate: string;
+   categoryId: string;
+}
+
+export interface IUpdatePromotionPayload {
+   id: string;
+   name: string;
+   value: number;
+   startDate: string;
+   endDate: string;
    // categoryId: string;
 }
 

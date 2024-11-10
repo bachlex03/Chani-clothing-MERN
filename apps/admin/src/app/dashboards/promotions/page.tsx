@@ -3,11 +3,6 @@
 import Header from '~/components/Header';
 import { PromotionDataTable } from './data-table';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-import { z } from 'zod';
-
 import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
 import { Suspense, useEffect, useState } from 'react';
 import { ApiError } from '~/common/errors/Api.error';
@@ -22,7 +17,7 @@ export default function DashboardPromotions() {
       [],
    );
 
-   const [loading, setLoading] = useState(true);
+   const [loading, setLoading] = useState(false);
 
    useEffect(() => {
       async function getAllCategories() {
@@ -68,7 +63,7 @@ export default function DashboardPromotions() {
                <CreatePromotionDialog categories={categories} />
             </div>
 
-            <div className="mx-auto pt-5">
+            <div className="pt-5 mx-auto">
                <Suspense fallback={<Loading></Loading>}>
                   <PromotionDataTable />
                </Suspense>

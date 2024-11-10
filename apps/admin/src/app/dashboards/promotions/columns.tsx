@@ -1,3 +1,8 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
+
 import {
    DropdownMenu,
    DropdownMenuContent,
@@ -6,25 +11,39 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu';
-import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 
 import { Button } from '~/components/ui/button';
-import { Checkbox } from '~/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import ProductDialog from '~/components/product-dialog';
 import {
    Dialog,
+   DialogClose,
    DialogContent,
    DialogFooter,
    DialogHeader,
    DialogTitle,
    DialogTrigger,
 } from '~/components/ui/dialog';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { IUpdatePromotionPayload } from '~/types/promotion.type';
 import {
-   ICreatePromotionPayload,
-   IUpdatePromotionPayload,
-} from '~/types/promotion.type';
+   Form,
+   FormControl,
+   FormField,
+   FormItem,
+   FormLabel,
+} from '~/components/ui/form';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Input } from '~/components/ui/input';
+import { toast } from '~/hooks/use-toast';
+import * as promotionServices from '~/services/promotions.service';
+import Loading from '~/components/loading';
+import { ApiError } from '~/common/errors/Api.error';
+import { set } from 'date-fns';
+import PromotionDialog from '~/components/promotion.dialog';
 
 export type Promotion = {
    _id: string;
@@ -40,12 +59,16 @@ enum Dialogs {
    dialog2 = 'dialog2',
 }
 
-export const categoryColumn: ColumnDef<Promotion>[] = [
+const deletePromotionSchema = z.object({
+   id: z.string().min(1),
+});
+
+export const promotionColumns: ColumnDef<Promotion>[] = [
    {
       accessorKey: '_id',
       header: 'ID',
       cell: ({ row }) => (
-         <div className="capitalize dark:text-blue-600 font-semibold">
+         <div className="font-semibold capitalize dark:text-blue-600">
             {row.getValue('_id')}
          </div>
       ),
@@ -61,7 +84,7 @@ export const categoryColumn: ColumnDef<Promotion>[] = [
       accessorKey: 'promotion_value',
       header: () => <div className="text-center">Discount rate</div>,
       cell: ({ row }) => (
-         <div className="capitalize text-center">
+         <div className="text-center capitalize">
             {row.getValue('promotion_value')}
          </div>
       ),
@@ -92,7 +115,7 @@ export const categoryColumn: ColumnDef<Promotion>[] = [
       accessorKey: 'is_active',
       header: () => <div className="text-center">Status</div>,
       cell: ({ row }) => (
-         <div className="capitalize text-center">
+         <div className="text-center capitalize">
             <span
                className={`text-xs px-2 py-1 rounded-lg text-center ${
                   row.getValue('is_active')
@@ -111,7 +134,52 @@ export const categoryColumn: ColumnDef<Promotion>[] = [
       header: () => <div className="text-left">Actions</div>,
       cell: ({ row }) => {
          const product = row.original;
-         const [dialog, setDialog] = useState(Dialogs.dialog1);
+         const [dialog, setDialog] = useState<Dialogs | null>(null);
+         const [open, setOpen] = useState(false);
+         const [loading, setLoading] = useState(false);
+
+         const deleteForm = useForm<z.infer<typeof deletePromotionSchema>>({
+            resolver: zodResolver(deletePromotionSchema),
+            defaultValues: {
+               id: '',
+            },
+         });
+
+         const onDelete = async (
+            data: z.infer<typeof deletePromotionSchema>,
+         ) => {
+            setLoading(true);
+
+            toast({
+               title: 'Delete Payload',
+               className: 'text-white dark:text-white',
+               description: (
+                  <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                     <code className="text-white">
+                        {JSON.stringify(data, null, 2)}
+                     </code>
+                  </pre>
+               ),
+            });
+
+            const result = await promotionServices.deletePromotion(data.id);
+
+            if (result instanceof ApiError) {
+               setLoading(false);
+               return toast({
+                  title: 'Delete Error',
+                  description: result.message,
+               });
+            }
+
+            setOpen(false);
+            setLoading(false);
+
+            toast({
+               title: 'Delete Success',
+               description: 'Promotion deleted successfully',
+            });
+         };
 
          const data: IUpdatePromotionPayload = {
             id: row.getValue('_id'),
@@ -123,63 +191,111 @@ export const categoryColumn: ColumnDef<Promotion>[] = [
          };
 
          return (
-            <Dialog>
-               <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                     <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <DotsHorizontalIcon className="h-4 w-4" />
-                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                     {/* <DropdownMenuItem
-                        onClick={() =>
-                           navigator.clipboard.writeText(product.id)
-                        }
-                     ></DropdownMenuItem> */}
-                     <DialogTrigger
-                        asChild
-                        onClick={() => {
-                           setDialog(Dialogs.dialog1);
-                        }}
-                     >
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                     </DialogTrigger>
-                     <DropdownMenuSeparator />
-                     <DialogTrigger
-                        asChild
-                        onClick={() => {
-                           setDialog(Dialogs.dialog2);
-                        }}
-                     >
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                     </DialogTrigger>
-                  </DropdownMenuContent>
-               </DropdownMenu>
-
-               {dialog === Dialogs.dialog1 ? (
-                  <ProductDialog />
-               ) : (
-                  <DialogContent className="rounded-lg">
-                     <DialogHeader className="flex flex-col mt-5 items-center">
-                        <DialogTitle className="text-sm">
-                           Are you sure want to delete this Item ?
-                           <p className="text-center mt-5 text-xl">
-                              {row.getValue('promotion_name')}
-                           </p>
-                        </DialogTitle>
-                     </DialogHeader>
-                     <div className="flex justify-center mt-5">
-                        <Button className="mr-5 dark:bg-slate-300">Yes</Button>
-                        <Button className="dark:bg-primary dark:text-slate-200 dark:hover:bg-slate-700">
-                           Cancel
+            <div>
+               <Dialog
+                  open={open}
+                  onOpenChange={(isOpen) => {
+                     if (!isOpen) {
+                        setOpen(false);
+                     }
+                  }}
+               >
+                  <DropdownMenu>
+                     <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="w-8 h-8 p-0">
+                           <span className="sr-only">Open menu</span>
+                           <DotsHorizontalIcon className="w-4 h-4" />
                         </Button>
-                     </div>
-                     <DialogFooter></DialogFooter>
-                  </DialogContent>
-               )}
-            </Dialog>
+                     </DropdownMenuTrigger>
+                     <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DialogTrigger
+                           asChild
+                           onClick={() => {
+                              setDialog(Dialogs.dialog1);
+                              setOpen(true);
+                           }}
+                        >
+                           <DropdownMenuItem>Edit</DropdownMenuItem>
+                        </DialogTrigger>
+                        <DropdownMenuSeparator />
+                        <DialogTrigger
+                           asChild
+                           onClick={() => {
+                              setDialog(Dialogs.dialog2);
+                              setOpen(true);
+                           }}
+                        >
+                           <DropdownMenuItem
+                              onClick={() => {
+                                 setDialog(Dialogs.dialog2);
+                                 setOpen(true);
+                                 deleteForm.setValue('id', row.getValue('_id'));
+                              }}
+                           >
+                              Delete
+                           </DropdownMenuItem>
+                        </DialogTrigger>
+                     </DropdownMenuContent>
+                  </DropdownMenu>
+                  {dialog === Dialogs.dialog1 ? (
+                     <PromotionDialog
+                        id={row.getValue('_id')}
+                        name={row.getValue('promotion_name')}
+                        value={row.getValue('promotion_value')}
+                        startDate={row.getValue('promotion_start_date')}
+                        endDate={row.getValue('promotion_end_date')}
+                     />
+                  ) : // <ProductDialog />
+                  null}
+                  {dialog === Dialogs.dialog2 ? (
+                     <DialogContent className="rounded-lg">
+                        {loading && <Loading className="bg-five/50" />}
+
+                        <DialogHeader className="flex flex-col items-center mt-5">
+                           <DialogTitle className="text-sm">
+                              Are you sure want to delete this Item ?
+                              <p className="mt-5 text-xl text-center">
+                                 {row.getValue('promotion_name')}
+                              </p>
+                           </DialogTitle>
+                        </DialogHeader>
+                        <div className="flex justify-center mt-5">
+                           <Form {...deleteForm}>
+                              <form
+                                 onSubmit={deleteForm.handleSubmit(onDelete)}
+                              >
+                                 <FormField
+                                    name="id"
+                                    control={deleteForm.control}
+                                    render={({ field }) => (
+                                       <Input {...field} type="hidden" />
+                                    )}
+                                 />
+                                 <Button
+                                    type="submit"
+                                    className="mr-5 dark:bg-slate-300"
+                                 >
+                                    Yes
+                                 </Button>
+                                 <Button
+                                    type="button"
+                                    className="dark:bg-primary dark:text-slate-200 dark:hover:bg-slate-700"
+                                    onClick={() => {
+                                       setDialog(null);
+                                       setOpen(false);
+                                    }}
+                                 >
+                                    Cancel
+                                 </Button>
+                              </form>
+                           </Form>
+                        </div>
+                        <DialogFooter></DialogFooter>
+                     </DialogContent>
+                  ) : null}
+               </Dialog>
+            </div>
          );
       },
    },

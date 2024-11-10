@@ -1,26 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { ChevronDownIcon } from '@radix-ui/react-icons';
 import {
-   ColumnFiltersState,
-   SortingState,
-   VisibilityState,
    flexRender,
    getCoreRowModel,
    getFilteredRowModel,
    getPaginationRowModel,
-   getSortedRowModel,
    useReactTable,
 } from '@tanstack/react-table';
 
 import { Button } from '~/components/ui/button';
-import {
-   DropdownMenu,
-   DropdownMenuCheckboxItem,
-   DropdownMenuContent,
-   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu';
 import { Input } from '~/components/ui/input';
 import {
    Table,
@@ -30,9 +20,8 @@ import {
    TableHeader,
    TableRow,
 } from '~/components/ui/table';
-import { categoryColumn, Promotion } from './columns';
+import { promotionColumns } from './columns';
 import { useEffect, useState } from 'react';
-import { ILoginPayload } from '~/types/auth/login.type';
 import * as promotionServices from '~/services/promotions.service';
 import { IGetAllPromotionsResponse } from '~/types/categories/get-all.type';
 import { ApiError } from '~/common/errors/Api.error';
@@ -51,7 +40,7 @@ export const PromotionDataTable = () => {
 
    const table = useReactTable({
       data: promotions,
-      columns: categoryColumn,
+      columns: promotionColumns,
       // onSortingChange: setSorting,
       // onColumnFiltersChange: setColumnFilters,
       getCoreRowModel: getCoreRowModel(),
@@ -156,7 +145,7 @@ export const PromotionDataTable = () => {
                   ) : (
                      <TableRow>
                         <TableCell
-                           colSpan={categoryColumn.length}
+                           colSpan={promotionColumns.length}
                            className="h-24 text-center"
                         >
                            No results.
@@ -166,7 +155,7 @@ export const PromotionDataTable = () => {
                </TableBody>
             </Table>
          </div>
-         <div className="flex items-center justify-end space-x-2 py-4">
+         <div className="flex items-center justify-end py-4 space-x-2">
             <Button
                variant="outline"
                size="sm"
