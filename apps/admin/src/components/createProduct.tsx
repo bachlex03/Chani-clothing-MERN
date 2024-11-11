@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -5,7 +6,7 @@
 
 import { toast } from '~/hooks/use-toast';
 import { Button } from './ui/button';
-import { Form } from './ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { ScrollArea } from './ui/scroll-area';
 import {
    Sheet,
@@ -22,80 +23,79 @@ import AppSelect from '~/components/app-select';
 import AppTextArea from '~/components/app-text-area';
 import AppColorCheckbox from '~/components/app-color-checkbox';
 import AppSizeCheckbox from '~/components/app-size-checkbox';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import { Checkbox } from './ui/checkbox';
+import * as cloudinaryService from '~/services/cloudinary.service';
+import { ICloudinaryResponse, IImageResponse } from '~/types/cloudinary.type';
+import { ApiError } from '~/common/errors/Api.error';
+import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import * as categoryServices from '~/services/categories/categories.service';
+import * as productServices from '~/services/products.service';
+import Loading from './loading';
+import { ICreateProductPayload, IProductImage } from '~/types/product.type';
 
 const statusOptions = [
    {
-      label: 'Active',
-      value: 'active',
+      label: 'Draft',
+      value: 'Draft',
    },
    {
-      label: 'Inactive',
-      value: 'inactive',
+      label: 'Published',
+      value: 'Published',
    },
 ];
 
 const brandOptions = [
    {
       label: 'Gucci',
-      value: 'gucci',
+      value: 'Gucci',
    },
    {
       label: 'Louis Vuitton',
-      value: 'louis-vuitton',
+      value: 'Louis vuitton',
    },
    {
       label: 'Chanel',
-      value: 'chanel',
+      value: 'Chanel',
    },
    {
       label: 'Dior',
-      value: 'dior',
+      value: 'Dior',
    },
    {
       label: 'Prada',
-      value: 'prada',
-   },
-];
-
-const categoryOptions = [
-   {
-      label: 'Active',
-      value: 'active',
-   },
-   {
-      label: 'Inactive',
-      value: 'inactive',
+      value: 'Prada',
    },
 ];
 
 const productTypeOptions = [
    {
       label: 'Clothe',
-      value: 'clothe',
+      value: 'Clothe',
    },
    {
       label: 'Trousers',
-      value: 'trousers',
+      value: 'Trousers',
    },
    {
       label: 'Shoes',
-      value: 'shoes',
+      value: 'Shoes',
    },
 ];
 
 const genderOptions = [
    {
       label: 'Man',
-      value: 'man',
+      value: 'Man',
    },
    {
       label: 'Woman',
-      value: 'woman',
+      value: 'Woman',
    },
    {
       label: 'Unisex',
-      value: 'unisex',
+      value: 'Unisex',
    },
 ];
 
@@ -108,11 +108,11 @@ enum sizeEnum {
 }
 
 enum colorEnum {
-   brown = 'brown',
-   grey = 'grey',
-   yellow = 'yellow',
-   pink = 'pink',
-   red = 'red',
+   brown = 'Brown',
+   grey = 'Grey',
+   yellow = 'Yellow',
+   pink = 'Pink',
+   red = 'Red',
 }
 
 const FormSchema = z.object({
@@ -142,16 +142,25 @@ const FormSchema = z.object({
    description: z.string({
       required_error: 'Please enter description for the product.',
    }),
-   price: z.any().refine((price) => Number(price) > 0, {
-      message: 'Price must be at least 1.',
+   images: z.array(z.string()).refine((value) => value.some((item) => item), {
+      message: 'You have to select at least one item.',
    }),
-   quantity: z.any().refine((quantity) => Number(quantity) > 0, {
-      message: 'Quantity must be at least 1.',
-   }),
+   price: z
+      .any()
+      .refine((price) => Number(price) > 0, {
+         message: 'Price must be at least 1.',
+      })
+      .transform((value) => Number(value)),
+   quantity: z
+      .any()
+      .refine((quantity) => Number(quantity) > 0, {
+         message: 'Quantity must be at least 1.',
+      })
+      .transform((value) => Number(value)),
    size: z.enum(['S', 'M', 'L', 'XL', '2XL'], {
       required_error: 'You need to select a size for product.',
    }),
-   color: z.enum(['brown', 'grey', 'yellow', 'pink', 'red'], {
+   color: z.enum(['Brown', 'Grey', 'Yellow', 'Pink', 'Red'], {
       required_error: 'You need to select a color for product.',
    }),
 });
@@ -161,6 +170,12 @@ export default function CreateProductAside() {
    const [description, setDescription] = useState('');
    const [price, SetPrice] = useState(0);
    const [quantity, setQuantity] = useState(0);
+   const [images, setImages] = useState<IImageResponse[]>([]);
+   const [categories, setCategories] = useState<IGetAllCategoriesResponse[]>(
+      [],
+   );
+   const [loading, setLoading] = useState(false);
+
    const triggerBtnRef = useRef<HTMLButtonElement>(null);
 
    const form = useForm<z.infer<typeof FormSchema>>({
@@ -171,10 +186,11 @@ export default function CreateProductAside() {
          price: 0,
          size: sizeEnum.S,
          color: colorEnum.brown,
+         images: [],
       },
    });
 
-   function onSubmit(data: z.infer<typeof FormSchema>) {
+   async function onSubmit(data: z.infer<typeof FormSchema>) {
       toast({
          title: 'You submitted the following values:',
          description: (
@@ -185,14 +201,106 @@ export default function CreateProductAside() {
             </pre>
          ),
       });
+
+      const payload: ICreateProductPayload = {
+         name: data.name,
+         description: data.description,
+         gender: data.gender,
+         type: data.type,
+         brand: data.brand,
+         images: data.images.map((img) => {
+            return {
+               secure_url: img,
+               public_id: images.find((image) => image.secure_url === img)
+                  ?.public_id,
+            } as IProductImage;
+         }),
+         categoryId: data.category,
+         category: data.category,
+         sizes: [data.size],
+         color: data.color,
+         price: data.price.toString(),
+         quantity: data.quantity.toString(),
+         status: data.status,
+      };
+
+      const result = await productServices.createProduct(payload);
+
+      if (result instanceof ApiError) {
+         return toast({
+            title: 'Error',
+            description: result.message,
+            variant: 'destructive',
+         });
+      }
+
+      toast({
+         title: 'Success',
+         description: 'Product has been created successfully.',
+      });
    }
+
+   useEffect(() => {
+      const fetchingImages = async () => {
+         const response = (await cloudinaryService.getAllImages()) as
+            | ICloudinaryResponse
+            | ApiError;
+
+         if (response instanceof ApiError) {
+            return toast({
+               title: 'Error',
+               description: response.message,
+               variant: 'destructive',
+            });
+         }
+
+         setImages(response.resources);
+      };
+
+      async function getAllCategories() {
+         const result = (await categoryServices.getAllCategories()) as
+            | IGetAllCategoriesResponse[]
+            | ApiError
+            | null;
+
+         if (result instanceof ApiError) {
+            console.log(result.errorResponse);
+
+            toast({
+               variant: 'destructive',
+               title: `Account ${result.errorResponse?.message}`,
+               description: `There was a problem with your request. ${result.errorResponse?.code}`,
+            });
+
+            return;
+         }
+
+         const categories = result?.filter(
+            (cate) => cate.category_parentId !== null,
+         ) as IGetAllCategoriesResponse[];
+
+         setCategories(
+            categories.filter((cate) => cate.category_parentId !== null),
+         );
+
+         setTimeout(() => {
+            setLoading(false);
+         }, 500);
+      }
+
+      getAllCategories();
+
+      fetchingImages();
+   }, []);
 
    return (
       <div>
+         {loading && <Loading />}
+
          <Sheet>
             <SheetTrigger ref={triggerBtnRef}></SheetTrigger>
             <Button
-               className="dark:bg-white dark:text-four font-semibold py-2 px-3 text-sm rounded-md"
+               className="px-3 py-2 text-sm font-semibold rounded-md dark:bg-white dark:text-four"
                onClick={() => {
                   if (triggerBtnRef.current) triggerBtnRef.current?.click();
                }}
@@ -211,7 +319,7 @@ export default function CreateProductAside() {
                            <Form {...form}>
                               <form
                                  onSubmit={form.handleSubmit(onSubmit)}
-                                 className=" w-full space-y-6"
+                                 className="w-full space-y-6 "
                               >
                                  <div>
                                     <AppInput
@@ -266,7 +374,10 @@ export default function CreateProductAside() {
                                        <AppSelect
                                           name="category"
                                           label="Category"
-                                          data={categoryOptions}
+                                          data={categories.map((cate) => ({
+                                             label: cate.category_name,
+                                             value: cate._id,
+                                          }))}
                                           form={form as any}
                                        />
                                     </div>
@@ -315,13 +426,98 @@ export default function CreateProductAside() {
                                     </div>
                                  </div>
 
-                                 <div>
-                                    {/* <AppInput
-                                       name="images"
-                                       form={form as any}
-                                       label="Images"
-                                       type="file"
-                                    /> */}
+                                 <div className="">
+                                    <h2 className="text-sm font-semibold">
+                                       Product images
+                                    </h2>
+                                    <div className="mt-5 border rounded-md dark:border-slate-500/50">
+                                       <ScrollArea className="rounded-md min-h-[250px] max-h-[500px]">
+                                          <div className="">
+                                             {/* <div className="p-3 bg-[#1f2e44] rounded-md">
+                                                <div className="relative h-[200px]">
+                                                   <Image
+                                                      src="https://res.cloudinary.com/djiju7xcq/image/upload/v1729839380/Sunflower-Jumpsuit-1-690x875_dibawa.webp"
+                                                      alt="project"
+                                                      layout="fill"
+                                                      objectFit="contain"
+                                                   />
+                                                </div>
+                                             </div> */}
+
+                                             <FormField
+                                                control={form.control}
+                                                name="images"
+                                                render={() => (
+                                                   <FormItem className="grid grid-cols-4 gap-5 p-3">
+                                                      {images.map((item) => (
+                                                         <FormField
+                                                            key={item.public_id}
+                                                            control={
+                                                               form.control
+                                                            }
+                                                            name="images"
+                                                            render={({
+                                                               field,
+                                                            }) => {
+                                                               return (
+                                                                  <FormItem
+                                                                     className="relative"
+                                                                     key={
+                                                                        item.public_id
+                                                                     }
+                                                                  >
+                                                                     <FormControl className="">
+                                                                        <Checkbox
+                                                                           className="absolute z-10 left-7 top-5"
+                                                                           checked={field.value?.includes(
+                                                                              item.secure_url,
+                                                                           )}
+                                                                           onCheckedChange={(
+                                                                              checked,
+                                                                           ) => {
+                                                                              return checked
+                                                                                 ? field.onChange(
+                                                                                      [
+                                                                                         ...field.value,
+                                                                                         item.secure_url,
+                                                                                      ],
+                                                                                   )
+                                                                                 : field.onChange(
+                                                                                      field.value?.filter(
+                                                                                         (
+                                                                                            value,
+                                                                                         ) =>
+                                                                                            value !==
+                                                                                            item.secure_url,
+                                                                                      ),
+                                                                                   );
+                                                                           }}
+                                                                        />
+                                                                     </FormControl>
+                                                                     <div className="p-3 bg-[#1f2e44] rounded-md">
+                                                                        <div className="relative h-[200px]">
+                                                                           <Image
+                                                                              src={
+                                                                                 item.secure_url
+                                                                              }
+                                                                              alt="project"
+                                                                              layout="fill"
+                                                                              objectFit="cover"
+                                                                           />
+                                                                        </div>
+                                                                     </div>
+                                                                  </FormItem>
+                                                               );
+                                                            }}
+                                                         />
+                                                      ))}
+                                                      <FormMessage className="col-span-2" />
+                                                   </FormItem>
+                                                )}
+                                             />
+                                          </div>
+                                       </ScrollArea>
+                                    </div>
                                  </div>
 
                                  <div>
@@ -378,8 +574,8 @@ export default function CreateProductAside() {
 
                   <div className="w-[27%]">
                      <ScrollArea className="h-[75%] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
-                        <div className="w-full px-5 flex flex-col items-center">
-                           <h2 className="font-bold text-xl">
+                        <div className="flex flex-col items-center w-full px-5">
+                           <h2 className="text-xl font-bold">
                               Product card preview
                            </h2>
 
@@ -393,17 +589,19 @@ export default function CreateProductAside() {
                               </div>
                            </div>
 
-                           <h2 className="mt-5 text-lg font-semibold self-start">
+                           <h2 className="self-start mt-5 text-lg font-semibold">
                               ${price || 200.99}
                            </h2>
 
-                           <h2 className="mt-5 text-lg font-bold">{name}</h2>
+                           <h2 className="self-start mt-5 text-lg font-bold">
+                              {name || 'Product name'}
+                           </h2>
 
-                           <p className="text-sm mt-1 text-slate-300 font-medium self-start">
+                           <p className="self-start mt-1 text-sm font-medium text-slate-300">
                               Woman's Fashion
                            </p>
 
-                           <p className="text-sm mt-5 dark:text-slate-400 self-start">
+                           <p className="self-start mt-5 text-sm dark:text-slate-400">
                               {description ||
                                  'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis odio voluptatibus,tenetur totam obcaecati minima tempora nul porro! Fuga, id'}
                            </p>

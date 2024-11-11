@@ -36,7 +36,7 @@ export default function AppColorCheckbox(props: AppColorCheckboxProps) {
                            />
                         </FormControl>
                         <FormLabel className="font-bold dark:text-amber-800">
-                           brown
+                           Brown
                         </FormLabel>
                      </FormItem>
                      <FormItem className="flex items-center space-x-3 space-y-0">

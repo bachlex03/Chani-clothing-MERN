@@ -26,3 +26,26 @@ export interface IProductResponse {
    current_discount: number;
    final_price: number;
 }
+
+export interface IProductImage {
+   secure_url: string;
+   public_id: string;
+}
+
+type sizeEnum = 'XS' | 'S' | 'M' | 'L' | 'XL' | '2XL';
+
+export interface ICreateProductPayload {
+   name: string;
+   description: string;
+   gender: string;
+   type: string;
+   brand: string;
+   images: IProductImage[];
+   categoryId: string;
+   category: string;
+   sizes: sizeEnum[];
+   color: string;
+   price: string;
+   quantity: string;
+   status: string;
+}
