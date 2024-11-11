@@ -115,9 +115,9 @@ export const productColumns: ColumnDef<IProductResponse>[] = [
          <div className="text-center capitalize">
             <span
                className={`text-xs px-2 py-1 rounded-lg text-center ${
-                  row.getValue('product_status')
+                  row.getValue('product_status') === 'Published'
                      ? 'bg-green-500/50'
-                     : 'bg-red-500/50'
+                     : 'bg-slate-500/50'
                }`}
             >
                {row.getValue('product_status')}
@@ -168,7 +168,12 @@ export const productColumns: ColumnDef<IProductResponse>[] = [
             }
 
             setOpen(false);
-            setLoading(false);
+
+            setTimeout(() => {
+               setOpen(false);
+
+               setLoading(false);
+            }, 500);
 
             toast({
                title: 'Delete Success',
@@ -223,7 +228,21 @@ export const productColumns: ColumnDef<IProductResponse>[] = [
                   </DropdownMenuContent>
                </DropdownMenu>
 
-               {dialog === Dialogs.dialog1 ? <ProductDialog /> : null}
+               {dialog === Dialogs.dialog1 ? (
+                  <ProductDialog
+                     id={row.original._id}
+                     name={row.original.product_name}
+                     description={row.original.product_description}
+                     price={row.original.product_price}
+                     status={row.original.product_status}
+                     brand={row.original.product_brand}
+                     category={row.original.product_category.category_name}
+                     categoryId={row.original.product_category._id}
+                     type={row.original.product_type}
+                     gender={row.original.product_gender}
+                     imageUrl={row.original.product_imgs[0].secure_url}
+                  />
+               ) : null}
 
                {dialog === Dialogs.dialog2 ? (
                   <div>

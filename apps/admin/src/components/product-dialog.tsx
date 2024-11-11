@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -7,12 +8,11 @@ import {
    DialogContent,
    DialogHeader,
    DialogTitle,
-   DialogDescription,
    DialogFooter,
 } from './ui/dialog';
 
 import { z } from 'zod';
-import { useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '~/hooks/use-toast';
@@ -20,100 +20,77 @@ import { ScrollArea } from './ui/scroll-area';
 import { Form } from './ui/form';
 import AppInput from './app-input';
 import AppSelect from './app-select';
-import AppColorCheckbox from './app-color-checkbox';
-import AppSizeCheckbox from './app-size-checkbox';
 import AppTextArea from './app-text-area';
+import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import { ApiError } from '~/common/errors/Api.error';
+import * as categoryServices from '~/services/categories/categories.service';
+import Loading from './loading';
+import * as productServices from '~/services/products.service';
+import { IUpdateProductPayload } from '~/types/product.type';
 
 const statusOptions = [
    {
-      label: 'Active',
-      value: 'active',
+      label: 'Draft',
+      value: 'Draft',
    },
    {
-      label: 'Inactive',
-      value: 'inactive',
+      label: 'Published',
+      value: 'Published',
    },
 ];
 
 const brandOptions = [
    {
       label: 'Gucci',
-      value: 'gucci',
+      value: 'Gucci',
    },
    {
       label: 'Louis Vuitton',
-      value: 'louis-vuitton',
+      value: 'Louis Vuitton',
    },
    {
       label: 'Chanel',
-      value: 'chanel',
+      value: 'Chanel',
    },
    {
       label: 'Dior',
-      value: 'dior',
+      value: 'Dior',
    },
    {
       label: 'Prada',
-      value: 'prada',
-   },
-];
-
-const categoryOptions = [
-   {
-      label: 'Active',
-      value: 'active',
-   },
-   {
-      label: 'Inactive',
-      value: 'inactive',
+      value: 'Prada',
    },
 ];
 
 const productTypeOptions = [
    {
       label: 'Clothe',
-      value: 'clothe',
+      value: 'Clothe',
    },
    {
       label: 'Trousers',
-      value: 'trousers',
+      value: 'Trousers',
    },
    {
       label: 'Shoes',
-      value: 'shoes',
+      value: 'Shoes',
    },
 ];
 
 const genderOptions = [
    {
       label: 'Man',
-      value: 'man',
+      value: 'Man',
    },
    {
       label: 'Woman',
-      value: 'woman',
+      value: 'Woman',
    },
    {
       label: 'Unisex',
-      value: 'unisex',
+      value: 'Unisex',
    },
 ];
-
-enum sizeEnum {
-   S = 'S',
-   M = 'M',
-   L = 'L',
-   XL = 'XL',
-   '2XL' = '2XL',
-}
-
-enum colorEnum {
-   brown = 'brown',
-   grey = 'grey',
-   yellow = 'yellow',
-   pink = 'pink',
-   red = 'red',
-}
 
 const FormSchema = z.object({
    name: z
@@ -145,35 +122,72 @@ const FormSchema = z.object({
    price: z.any().refine((price) => Number(price) > 0, {
       message: 'Price must be at least 1.',
    }),
-   quantity: z.any().refine((quantity) => Number(quantity) > 0, {
-      message: 'Quantity must be at least 1.',
-   }),
-   size: z.enum(['S', 'M', 'L', 'XL', '2XL'], {
-      required_error: 'You need to select a size for product.',
-   }),
-   color: z.enum(['brown', 'grey', 'yellow', 'pink', 'red'], {
-      required_error: 'You need to select a color for product.',
-   }),
 });
 
-export default function ProductDialog() {
-   const [name, setName] = useState('');
-   const [description, setDescription] = useState('');
-   const [price, SetPrice] = useState(0);
-   const [quantity, setQuantity] = useState(0);
+export type ProductDialogProps = {
+   id: string;
+   name: string;
+   description: string;
+   price: number;
+   status: string;
+   brand: string;
+   category: string;
+   categoryId: string;
+   type: string;
+   gender: string;
+   imageUrl: string;
+};
+
+export default function ProductDialog(props: ProductDialogProps) {
+   const [name, setName] = useState(props.name);
+   const [description, setDescription] = useState(props.description);
+   const [price, SetPrice] = useState(props.price);
+
+   const [loading, setLoading] = useState(false);
+   const [categories, setCategories] = useState<IGetAllCategoriesResponse[]>(
+      [],
+   );
+
+   useEffect(() => {
+      async function getAllCategories() {
+         const result = (await categoryServices.getAllCategories()) as
+            | IGetAllCategoriesResponse[]
+            | ApiError
+            | null;
+
+         if (result instanceof ApiError) {
+            console.log(result.errorResponse);
+
+            toast({
+               variant: 'destructive',
+               title: `Account ${result.errorResponse?.message}`,
+               description: `There was a problem with your request. ${result.errorResponse?.code}`,
+            });
+
+            return;
+         }
+
+         const categories = result?.filter(
+            (cate) => cate.category_parentId !== null,
+         ) as IGetAllCategoriesResponse[];
+
+         setCategories(categories as IGetAllCategoriesResponse[]);
+
+         setTimeout(() => {
+            // setLoading(false);
+         }, 500);
+      }
+
+      getAllCategories();
+   }, []);
 
    const form = useForm<z.infer<typeof FormSchema>>({
       resolver: zodResolver(FormSchema),
-      defaultValues: {
-         name: '',
-         quantity: 0,
-         price: 0,
-         size: sizeEnum.S,
-         color: colorEnum.brown,
-      },
    });
 
-   function onSubmit(data: z.infer<typeof FormSchema>) {
+   async function onUpdate(data: z.infer<typeof FormSchema>) {
+      setLoading(true);
+
       toast({
          title: 'You submitted the following values:',
          description: (
@@ -184,10 +198,56 @@ export default function ProductDialog() {
             </pre>
          ),
       });
+
+      const payload: IUpdateProductPayload = {
+         name: data.name,
+         description: data.description,
+         price: data.price,
+         status: data.status,
+         brand: data.brand,
+         categoryId: data.category,
+         gender: data.gender,
+         type: data.type,
+      };
+
+      const result = await productServices.updateProduct(props.id, payload);
+
+      if (result instanceof ApiError) {
+         toast({
+            title: 'Product update failed',
+            description: 'Product update failed. Please try again.',
+            variant: 'destructive',
+         });
+
+         setLoading(false);
+         return;
+      }
+
+      setTimeout(() => {
+         setLoading(false);
+      }, 500);
+
+      toast({
+         title: 'Product updated successfully',
+         description: 'Product has been updated successfully.',
+         className: 'bg-green-300',
+      });
    }
+
+   useEffect(() => {
+      form.setValue('name', props.name);
+      form.setValue('description', props.description);
+      form.setValue('status', props.status);
+      form.setValue('brand', props.brand);
+      form.setValue('category', props.categoryId);
+      form.setValue('type', props.type);
+      form.setValue('gender', props.gender);
+      form.setValue('price', props.price);
+   }, []);
 
    return (
       <DialogContent className="w-[85%] h-[85%] rounded-lg">
+         {loading && <Loading />}
          <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
          </DialogHeader>
@@ -198,7 +258,7 @@ export default function ProductDialog() {
                      <div className="w-full px-5">
                         <Form {...form}>
                            <form
-                              onSubmit={form.handleSubmit(onSubmit)}
+                              onSubmit={form.handleSubmit(onUpdate)}
                               className="w-full space-y-6 "
                            >
                               <div>
@@ -233,6 +293,7 @@ export default function ProductDialog() {
                                        name="status"
                                        label="Status"
                                        placeholder="Select status"
+                                       defaultValue={props.status}
                                        data={statusOptions}
                                        form={form as any}
                                     />
@@ -254,7 +315,10 @@ export default function ProductDialog() {
                                     <AppSelect
                                        name="category"
                                        label="Category"
-                                       data={categoryOptions}
+                                       data={categories.map((cate) => ({
+                                          label: cate.category_name,
+                                          value: cate._id,
+                                       }))}
                                        form={form as any}
                                     />
                                  </div>
@@ -304,18 +368,6 @@ export default function ProductDialog() {
                                        setValue={SetPrice}
                                     />
                                  </div>
-
-                                 <div className="col-span-1">
-                                    <AppInput
-                                       name="quantity"
-                                       // placeholder="
-                                       form={form as any}
-                                       label="Quantity"
-                                       type="number"
-                                       value={quantity}
-                                       setValue={setQuantity}
-                                    />
-                                 </div>
                               </div>
 
                               <div className="w-[100%] flex justify-end">
@@ -339,7 +391,10 @@ export default function ProductDialog() {
                         <div className="w-[240px] h-[240px] mt-5 rounded-xl bg-[#121f31]">
                            <div className="flex justify-center items-center h-[100%]">
                               <img
-                                 src="https://themesdesign.in/tailwick/html-dark/assets/images/img-03.png"
+                                 src={
+                                    props.imageUrl ||
+                                    'https://themesdesign.in/tailwick/html-dark/assets/images/img-03.png'
+                                 }
                                  className="w-[200px] h-[200px]"
                                  alt="sample image"
                               />

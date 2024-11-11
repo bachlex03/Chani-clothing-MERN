@@ -16,7 +16,7 @@ export interface IProductResponse {
    product_colors: string[];
    product_description: string;
    product_gender: string;
-   product_imgs: '';
+   product_imgs: IProductImage[];
    product_name: string;
    product_price: number;
    product_sizes: string[];
@@ -47,5 +47,16 @@ export interface ICreateProductPayload {
    color: string;
    price: string;
    quantity: string;
+   status: string;
+}
+
+export interface IUpdateProductPayload {
+   name: string;
+   description: string;
+   gender: string;
+   type: string;
+   brand: string;
+   categoryId: string;
+   price: string;
    status: string;
 }

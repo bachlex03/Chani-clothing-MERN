@@ -28,27 +28,16 @@ import { IProductResponse } from '~/types/product.type';
 import { toast } from '~/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Button } from '~/components/ui/button';
-
-const data: Product[] = [
-   {
-      id: '1',
-      product_code: '#LVCOM-715920526',
-      product_name: 'Sunflower Jumpsuit',
-      category_name: 'Maxi',
-      product_price: 100,
-      product_stocks: 270,
-      product_status: 'Published',
-   },
-];
+import { IoReloadCircleSharp } from 'react-icons/io5';
+import Loading from '~/components/loading';
 
 export const ProductDataTable = () => {
    const router = useRouter();
    const [products, setProducts] = useState<IProductResponse[]>([]);
+   const [loading, setLoading] = useState(false);
 
    const [pageIndex, setPageIndex] = useState(0);
-   const [pageSize] = useState(5);
-
-   console.log('products', products);
+   const [pageSize] = useState(7);
 
    const table = useReactTable({
       data: products,
@@ -65,37 +54,59 @@ export const ProductDataTable = () => {
       },
    });
 
+   const getAllProducts = async () => {
+      setLoading(true);
+
+      const result = (await productServices.getAllProducts()) as
+         | IProductResponse[]
+         | ApiError
+         | null;
+
+      if (result instanceof ApiError) {
+         console.log(result.errorResponse);
+         setLoading(false);
+
+         toast({
+            variant: 'destructive',
+            title: `Account ${result.errorResponse?.message}`,
+            description: `There was a problem with your request. ${result.errorResponse?.code}`,
+         });
+
+         router.push('/auth/login');
+
+         return;
+      }
+
+      if (result) {
+         setProducts(result as IProductResponse[]);
+
+         setTimeout(() => {
+            setLoading(false);
+         }, 500);
+      }
+   };
+
    useEffect(() => {
-      const getAllProducts = async () => {
-         const result = (await productServices.getAllProducts()) as
-            | IProductResponse[]
-            | ApiError
-            | null;
-
-         if (result instanceof ApiError) {
-            console.log(result.errorResponse);
-
-            toast({
-               variant: 'destructive',
-               title: `Account ${result.errorResponse?.message}`,
-               description: `There was a problem with your request. ${result.errorResponse?.code}`,
-            });
-
-            router.push('/auth/login');
-
-            return;
-         }
-
-         if (result) {
-            setProducts(result as IProductResponse[]);
-         }
-      };
-
       getAllProducts();
    }, []);
 
    return (
       <div className="w-full">
+         {loading && <Loading />}
+
+         <div
+            className="inline-block px-2 py-1 rounded-md cursor-pointer bg-blue-700/40 hover:bg-blue-700"
+            onClick={() => {
+               getAllProducts();
+            }}
+         >
+            <span className="flex items-center justify-center">
+               <i className="flex items-center justify-center">
+                  <IoReloadCircleSharp className="mr-3 text-2xl font-bold text-slate-50" />
+               </i>
+               <p className="font-medium text-slate-50">Reload</p>
+            </span>
+         </div>
          <div className="flex items-center py-4">
             <Input
                placeholder="Filter by name..."

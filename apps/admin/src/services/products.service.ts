@@ -1,6 +1,10 @@
 import { ApiError } from '~/common/errors/Api.error';
-import { ICreateProductPayload, IProductResponse } from '~/types/product.type';
-import { get, post, remove } from '~/utils/http';
+import {
+   ICreateProductPayload,
+   IProductResponse,
+   IUpdateProductPayload,
+} from '~/types/product.type';
+import { get, post, put, remove } from '~/utils/http';
 
 export const getAllProducts = async (): Promise<
    IProductResponse[] | ApiError
@@ -31,6 +35,21 @@ export const createProduct = async (payload: ICreateProductPayload) => {
    }
 
    return result.data as IProductResponse[];
+};
+
+export const updateProduct = async (
+   id: string,
+   payload: IUpdateProductPayload,
+) => {
+   const result = await put(`products/${id}`, payload);
+
+   console.log('result', result);
+
+   if (result instanceof ApiError) {
+      return result as ApiError;
+   }
+
+   return result.data;
 };
 
 export const deletePromotion = async (id: string) => {

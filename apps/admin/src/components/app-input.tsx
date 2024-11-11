@@ -41,6 +41,7 @@ export default function AppInput(props: AppInputProps) {
                      type={props.type || 'text'}
                      disabled={props.disabled}
                      value={props.value}
+                     // defaultValue={field.value}
                      onChange={(e) => {
                         if (props.setValue) {
                            field.onChange(e);

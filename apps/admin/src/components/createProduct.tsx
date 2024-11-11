@@ -53,7 +53,7 @@ const brandOptions = [
    },
    {
       label: 'Louis Vuitton',
-      value: 'Louis vuitton',
+      value: 'Louis Vuitton',
    },
    {
       label: 'Chanel',
@@ -191,6 +191,8 @@ export default function CreateProductAside() {
    });
 
    async function onSubmit(data: z.infer<typeof FormSchema>) {
+      setLoading(true);
+
       toast({
          title: 'You submitted the following values:',
          description: (
@@ -227,12 +229,18 @@ export default function CreateProductAside() {
       const result = await productServices.createProduct(payload);
 
       if (result instanceof ApiError) {
+         setLoading(false);
+
          return toast({
             title: 'Error',
             description: result.message,
             variant: 'destructive',
          });
       }
+
+      setTimeout(() => {
+         setLoading(false);
+      }, 500);
 
       toast({
          title: 'Success',
