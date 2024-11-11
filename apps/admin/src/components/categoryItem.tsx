@@ -7,7 +7,10 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
-import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import {
+   IGetAllCategoriesResponse,
+   IUpdateCategoryPayload,
+} from '~/types/category.type';
 import { use, useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -30,6 +33,10 @@ import {
    CommandItem,
    CommandList,
 } from './ui/command';
+import { toast } from '~/hooks/use-toast';
+import * as categoryService from '~/services/categories.service';
+import { ApiError } from '~/common/errors/Api.error';
+import Loading from './loading';
 
 export type CategoryItemProps = {
    key: number;
@@ -46,6 +53,7 @@ export const updateCategorySchema = z.object({
 
 export default function CategoryItem(props: CategoryItemProps) {
    const [child, setChild] = useState<IGetAllCategoriesResponse[]>([]);
+   const [loading, setLoading] = useState(false);
 
    const form = useForm<z.infer<typeof updateCategorySchema>>({
       resolver: zodResolver(updateCategorySchema),
@@ -58,24 +66,101 @@ export default function CategoryItem(props: CategoryItemProps) {
       (category) => category.category_parentId === null,
    );
 
-   const onUpdate = async (values: z.infer<typeof updateCategorySchema>) => {
-      console.log(values);
+   const onUpdate = async (
+      id: string,
+      data: z.infer<typeof updateCategorySchema>,
+   ) => {
+      setLoading(true);
+
+      toast({
+         title: 'Create category payload',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
+         description: (
+            <pre className="mt-2 w-[340px] rounded-md dark:bg-green-800 p-4">
+               <code className="text-white">
+                  {JSON.stringify(data, null, 2)}
+               </code>
+            </pre>
+         ),
+      });
+
+      const payload: IUpdateCategoryPayload = {
+         name: data.name,
+         parentId: data.parentId,
+      };
+      const result = await categoryService.updateCategory(id, payload);
+      console.log('result', result);
+
+      if (result instanceof ApiError) {
+         console.log(result.errorResponse);
+
+         setLoading(false);
+
+         toast({
+            title: `Account ${result.errorResponse?.message}`,
+            description: `There was a problem with your request. ${result.errorResponse?.code}`,
+            variant: 'destructive',
+         });
+
+         return;
+      }
+
+      setTimeout(() => {
+         setLoading(false);
+      }, 500);
+
+      toast({
+         title: 'Update category',
+         description: 'Category updated successfully.',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
+      });
+   };
+
+   const onDelete = async (id: string) => {
+      setLoading(true);
+
+      const result = await categoryService.deleteCategory(id);
+      console.log('result', result);
+
+      if (result instanceof ApiError) {
+         setLoading(false);
+
+         toast({
+            title: `Account ${result.errorResponse?.message}`,
+            description: `There was a problem with your request. ${result.errorResponse?.code}`,
+            variant: 'destructive',
+         });
+         return;
+      }
+
+      setTimeout(() => {
+         setLoading(false);
+      }, 500);
+
+      toast({
+         title: 'Delete category',
+         description: 'Category deleted successfully.',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
+      });
    };
 
    useEffect(() => {
       const children = props.categories.filter(
          (category) => category.category_parentId === props.parentCategory._id,
       );
+
       setChild(children);
    }, []);
 
    return (
       <div className="pb-10" key={props.parentCategory._id}>
+         {loading && <Loading />}
+
          <AppCardContent className="border-none dark:bg-[#1f2e44] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]">
-            <h2 className="font-semibold mb-3">
+            <h2 className="mb-3 font-semibold">
                {props.parentCategory.category_name}
             </h2>
-            <ScrollArea className="h-72 w-full rounded-md border">
+            <ScrollArea className="w-full border rounded-md h-72">
                <div className="p-4">
                   <h4 className="mb-4 text-sm font-medium leading-none">
                      Name
@@ -83,7 +168,7 @@ export default function CategoryItem(props: CategoryItemProps) {
                   {child.map((category, index) => (
                      <div
                         key={index}
-                        className="flex justify-between items-center h-10"
+                        className="flex items-center justify-between h-10"
                      >
                         <p className="text-sm font-medium">
                            {category.category_name}
@@ -93,7 +178,7 @@ export default function CategoryItem(props: CategoryItemProps) {
                            <PopoverTrigger asChild>
                               <Button
                                  variant="outline"
-                                 className="text-xs px-3 py-3 dark:bg-five h-6 leading-none"
+                                 className="h-6 px-3 py-3 text-xs leading-none dark:bg-five"
                               >
                                  Edit
                               </Button>
@@ -112,13 +197,18 @@ export default function CategoryItem(props: CategoryItemProps) {
                                  <div className="grid gap-2">
                                     <Form {...form}>
                                        <form
-                                          onSubmit={form.handleSubmit(onUpdate)}
+                                          onSubmit={form.handleSubmit(() => {
+                                             onUpdate(
+                                                category._id,
+                                                form.getValues(),
+                                             );
+                                          })}
                                        >
                                           <FormField
                                              control={form.control}
                                              name="name"
                                              render={({ field }) => (
-                                                <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                                                <FormItem className="grid items-center grid-cols-3 gap-4 mb-5">
                                                    <FormLabel htmlFor="name">
                                                       Name
                                                    </FormLabel>
@@ -127,7 +217,7 @@ export default function CategoryItem(props: CategoryItemProps) {
                                                          id="name"
                                                          placeholder="Name"
                                                          {...field}
-                                                         className="col-span-2 h-8"
+                                                         className="h-8 col-span-2"
                                                       />
                                                    </FormControl>
                                                    <FormMessage className="col-span-3" />
@@ -139,7 +229,7 @@ export default function CategoryItem(props: CategoryItemProps) {
                                              control={form.control}
                                              name="parentId"
                                              render={({ field }) => (
-                                                <FormItem className="grid grid-cols-3 items-center gap-4 mb-5">
+                                                <FormItem className="grid items-center grid-cols-3 gap-4 mb-5">
                                                    <FormLabel>Parent</FormLabel>
                                                    <Popover>
                                                       <PopoverTrigger asChild>
@@ -224,7 +314,16 @@ export default function CategoryItem(props: CategoryItemProps) {
 
                                           <div className="flex justify-end">
                                              <Button
-                                                className="rounded-3xl mt-2 text-right"
+                                                onClick={() =>
+                                                   onDelete(category._id)
+                                                }
+                                                type="button"
+                                                className="mt-2 mr-3 text-right rounded-3xl dark:bg-red-700/80 dark:hover:bg-red-700 dark:text-white"
+                                             >
+                                                Delete
+                                             </Button>
+                                             <Button
+                                                className="mt-2 text-right rounded-3xl"
                                                 type="submit"
                                              >
                                                 Save change

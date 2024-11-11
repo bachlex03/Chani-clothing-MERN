@@ -40,9 +40,9 @@ import {
 } from '~/components/ui/popover';
 import { toast } from '~/hooks/use-toast';
 import { cn } from '~/lib/utils';
-import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import { IGetAllCategoriesResponse } from '~/types/category.type';
 import * as promotionServices from '~/services/promotions.service';
-import * as categoryServices from '~/services/categories/categories.service';
+import * as categoryServices from '~/services/categories.service';
 
 import { ApiError } from '~/common/errors/Api.error';
 

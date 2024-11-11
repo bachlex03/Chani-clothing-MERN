@@ -3,11 +3,11 @@
 import Header from '~/components/Header';
 import { PromotionDataTable } from './data-table';
 
-import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import { IGetAllCategoriesResponse } from '~/types/category.type';
 import { Suspense, useEffect, useState } from 'react';
 import { ApiError } from '~/common/errors/Api.error';
 import { toast } from '~/hooks/use-toast';
-import * as categoryServices from '~/services/categories/categories.service';
+import * as categoryServices from '~/services/categories.service';
 
 import Loading from '~/components/loading';
 import CreatePromotionDialog from '~/components/create-promotion-dialog';

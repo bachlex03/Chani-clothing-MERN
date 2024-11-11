@@ -43,7 +43,7 @@ import { useState } from 'react';
 import { ApiError } from '~/common/errors/Api.error';
 import * as promotionServices from '~/services/promotions.service';
 import { toast } from '~/hooks/use-toast';
-import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import { IGetAllCategoriesResponse } from '~/types/category.type';
 import Loading from '~/components/loading';
 
 export const CreatePromotionSchema = z.object({
