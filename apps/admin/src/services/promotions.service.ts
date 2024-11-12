@@ -1,5 +1,5 @@
 import { ApiError } from '~/common/errors/Api.error';
-import { IGetAllPromotionsResponse } from '~/types/categories/get-all.type';
+import { IGetAllPromotionsResponse } from '~/types/category.type';
 import {
    ICreatePromotionPayload,
    ICreatePromotionResponse,

@@ -13,23 +13,19 @@ import {
    DialogTrigger,
 } from './ui/dialog';
 import { Input } from './ui/input';
-import { Label } from './ui/label';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '~/hooks/use-toast';
 import {
    Form,
    FormControl,
-   FormDescription,
    FormField,
    FormItem,
    FormLabel,
    FormMessage,
 } from './ui/form';
-import { Checkbox } from './ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '~/lib/utils';
-import { FaCaretRight, FaCheck } from 'react-icons/fa6';
 import {
    Command,
    CommandEmpty,
@@ -40,59 +36,95 @@ import {
 } from './ui/command';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import * as categoryService from '~/services/categories/categories.service';
+import * as categoryService from '~/services/categories.service';
 import { ApiError } from '~/common/errors/Api.error';
-import { IGetAllCategoriesResponse } from '~/types/categories/get-all.type';
+import {
+   ICreateCategoryPayload,
+   IGetAllCategoriesResponse,
+} from '~/types/category.type';
+import Loading from './loading';
 
-export const createCategorySchema = z
-   .object({
-      name: z.string().min(4),
-      isNotParent: z.boolean().default(false).optional(),
-      parentId: z
-         .string({
-            required_error: 'Please select a parent category.',
-         })
-         .optional()
-         .nullable(),
-   })
-   .refine(
-      (data) => !data.isNotParent || (data.isNotParent && !!data.parentId),
-      {
-         message:
-            'Please select a parent category when "This is not a parent category" is checked.',
-         path: ['parentId'],
-      },
-   );
+export const createCategorySchema = z.object({
+   name: z.string().min(4),
+   parentId: z.string({
+      required_error: 'Please select a parent category.',
+      message: 'Please select a parent category.',
+   }),
+});
+// .refine(
+//    (data) => !data.isNotParent || (data.isNotParent && !!data.parentId),
+//    {
+//       message:
+//          'Please select a parent category when "This is not a parent category" is checked.',
+//       path: ['parentId'],
+//    },
+// );
 
 export default function CreateCategoryModel() {
    const [categories, setCategories] = useState<IGetAllCategoriesResponse[]>(
       [],
    );
 
+   const [loading, setLoading] = useState(false);
+
    const form = useForm<z.infer<typeof createCategorySchema>>({
       resolver: zodResolver(createCategorySchema),
       defaultValues: {
          name: '',
-         isNotParent: false,
-         parentId: null,
+         // isNotParent: false,
+         parentId: '',
       },
    });
 
-   const isNotParent = form.watch('isNotParent');
+   // const isNotParent = form.watch('isNotParent');
 
    const onCreateCategory = async (
       data: z.infer<typeof createCategorySchema>,
    ) => {
+      setLoading(true);
+
       toast({
-         title: 'Login successful',
-         className: 'bg-[green] dark:bg-[green] text-white dark:text-white',
+         title: 'Create category payload',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <pre className="mt-2 w-[340px] rounded-md dark:bg-green-800 p-4">
                <code className="text-white">
                   {JSON.stringify(data, null, 2)}
                </code>
             </pre>
          ),
+      });
+
+      const payload: ICreateCategoryPayload = {
+         name: data.name,
+         parentId: data.parentId,
+      };
+
+      const result = await categoryService.createCategory(payload);
+      console.log('result', result);
+
+      if (result instanceof ApiError) {
+         console.log(result.errorResponse);
+
+         toast({
+            title: `Account ${result.errorResponse?.message}`,
+            description: `There was a problem with your request. ${result.errorResponse?.code}`,
+            variant: 'destructive',
+         });
+
+         setLoading(false);
+
+         return;
+      }
+
+      setTimeout(() => {
+         setLoading(false);
+      }, 500);
+
+      toast({
+         title: 'Create category',
+         description: 'Category created successfully.',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
       });
    };
 
@@ -127,11 +159,12 @@ export default function CreateCategoryModel() {
 
    return (
       <div>
+         {loading && <Loading />}
          <Dialog>
             <DialogTrigger asChild>
                <Button
                   variant="outline"
-                  className="dark:bg-white dark:text-slate-800 font-semibold dark:hover:bg-slate-700"
+                  className="font-semibold dark:bg-white dark:text-slate-800 dark:hover:bg-slate-700"
                >
                   + Create new
                </Button>
@@ -153,13 +186,13 @@ export default function CreateCategoryModel() {
                         name="name"
                         control={form.control}
                         render={({ field }) => (
-                           <FormItem className="grid grid-cols-4 items-center gap-4">
+                           <FormItem className="grid items-center grid-cols-4 gap-4">
                               <FormLabel className="text-right">Name</FormLabel>
                               <FormControl>
                                  <Input
                                     {...field}
                                     placeholder="Name"
-                                    className="rounded-xl col-span-3"
+                                    className="col-span-3 rounded-xl"
                                  />
                               </FormControl>
                               <FormMessage className="col-span-4" />
@@ -167,7 +200,7 @@ export default function CreateCategoryModel() {
                         )}
                      />
 
-                     <FormField
+                     {/* <FormField
                         name="isNotParent"
                         control={form.control}
                         render={({ field }) => (
@@ -188,84 +221,84 @@ export default function CreateCategoryModel() {
                               </div>
                            </FormItem>
                         )}
-                     />
+                     /> */}
 
-                     {isNotParent && (
-                        <FormField
-                           control={form.control}
-                           name="parentId"
-                           render={({ field }) => (
-                              <FormItem className="flex flex-col">
-                                 <FormLabel>Child Category</FormLabel>
-                                 <Popover>
-                                    <PopoverTrigger asChild>
-                                       <FormControl>
-                                          <Button
-                                             variant="outline"
-                                             role="combobox"
-                                             className={cn(
-                                                'w-[200px] justify-between',
-                                                !field.value &&
-                                                   'text-muted-foreground',
-                                             )}
-                                          >
-                                             {field.value
-                                                ? categories.find(
-                                                     (category) =>
-                                                        category._id ===
-                                                        field.value,
-                                                  )?.category_name
-                                                : 'Select category'}
-                                             <ChevronsUpDown className="opacity-50" />
-                                          </Button>
-                                       </FormControl>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-[200px] p-0">
-                                       <Command>
-                                          <CommandInput
-                                             placeholder="Search framework..."
-                                             className="h-9"
-                                          />
-                                          <CommandList>
-                                             <CommandEmpty>
-                                                No framework found.
-                                             </CommandEmpty>
-                                             <CommandGroup>
-                                                {categories.map((category) => (
-                                                   <CommandItem
-                                                      value={
-                                                         category.category_name
-                                                      }
-                                                      key={category._id}
-                                                      onSelect={() => {
-                                                         form.setValue(
-                                                            'parentId',
-                                                            category._id,
-                                                         );
-                                                      }}
-                                                   >
-                                                      {category.category_name}
-                                                      <Check
-                                                         className={cn(
-                                                            'ml-auto',
-                                                            category._id ===
-                                                               field.value
-                                                               ? 'opacity-100'
-                                                               : 'opacity-0',
-                                                         )}
-                                                      />
-                                                   </CommandItem>
-                                                ))}
-                                             </CommandGroup>
-                                          </CommandList>
-                                       </Command>
-                                    </PopoverContent>
-                                 </Popover>
-                                 <FormMessage />
-                              </FormItem>
-                           )}
-                        />
-                     )}
+                     <FormField
+                        control={form.control}
+                        name="parentId"
+                        render={({ field }) => (
+                           <FormItem className="grid items-center grid-cols-4 gap-4">
+                              <FormLabel className="text-right">
+                                 Category
+                              </FormLabel>
+                              <Popover>
+                                 <PopoverTrigger asChild>
+                                    <FormControl>
+                                       <Button
+                                          variant="outline"
+                                          role="combobox"
+                                          className={cn(
+                                             'col-span-3 justify-between',
+                                             !field.value &&
+                                                'text-muted-foreground',
+                                          )}
+                                       >
+                                          {field.value
+                                             ? categories.find(
+                                                  (category) =>
+                                                     category._id ===
+                                                     field.value,
+                                               )?.category_name
+                                             : 'Select category'}
+                                          <ChevronsUpDown className="opacity-50" />
+                                       </Button>
+                                    </FormControl>
+                                 </PopoverTrigger>
+                                 <PopoverContent className="w-[200px] p-0">
+                                    <Command>
+                                       <CommandInput
+                                          placeholder="Search framework..."
+                                          className="h-9"
+                                       />
+                                       <CommandList>
+                                          <CommandEmpty>
+                                             No framework found.
+                                          </CommandEmpty>
+                                          <CommandGroup>
+                                             {categories.map((category) => (
+                                                <CommandItem
+                                                   value={
+                                                      category.category_name
+                                                   }
+                                                   key={category._id}
+                                                   onSelect={() => {
+                                                      form.setValue(
+                                                         'parentId',
+                                                         category._id,
+                                                      );
+                                                   }}
+                                                >
+                                                   {category.category_name}
+                                                   <Check
+                                                      className={cn(
+                                                         'ml-auto',
+                                                         category._id ===
+                                                            field.value
+                                                            ? 'opacity-100'
+                                                            : 'opacity-0',
+                                                      )}
+                                                   />
+                                                </CommandItem>
+                                             ))}
+                                          </CommandGroup>
+                                       </CommandList>
+                                    </Command>
+                                 </PopoverContent>
+                              </Popover>
+                              <FormMessage className="col-span-4" />
+                           </FormItem>
+                        )}
+                     />
 
                      <DialogFooter>
                         <Button type="submit">Create</Button>

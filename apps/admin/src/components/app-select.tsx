@@ -81,44 +81,5 @@ export default function AppSelect(props: AppSelectProps) {
             </FormItem>
          )}
       />
-      // <FormField
-      //    control={props.form.control}
-      //    name="status"
-      //    render={({ field }) => (
-      //       <FormItem>
-      //          <FormLabel>Status</FormLabel>
-      //          <Select
-      //             onValueChange={(e) => {
-      //                field.onChange(e);
-
-      //                if (selectRef.current) {
-      //                   selectRef.current.className =
-      //                      selectRef.current.className.concat(
-      //                         ' dark:text-blue-500 dark:font-bold',
-      //                      );
-      //                }
-      //             }}
-      //             defaultValue={field.value}
-      //          >
-      //             <FormControl>
-      //                <SelectTrigger ref={selectRef} className="dark:bg-five">
-      //                   <SelectValue placeholder={props.placeholder || ''} />
-      //                </SelectTrigger>
-      //             </FormControl>
-      //             <SelectContent className="dark:bg-five">
-      //                {props.data &&
-      //                   props.data.length > 0 &&
-      //                   props.data.map((item, index) => (
-      //                      <SelectItem key={index} value={item.value}>
-      //                         {item.label}
-      //                      </SelectItem>
-      //                   ))}
-      //             </SelectContent>
-      //          </Select>
-      //          <FormDescription>{props.description || ''}</FormDescription>
-      //          <FormMessage />
-      //       </FormItem>
-      //    )}
-      // />
    );
 }

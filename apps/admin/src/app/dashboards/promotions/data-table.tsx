@@ -23,7 +23,7 @@ import {
 import { promotionColumns } from './columns';
 import { useEffect, useState } from 'react';
 import * as promotionServices from '~/services/promotions.service';
-import { IGetAllPromotionsResponse } from '~/types/categories/get-all.type';
+import { IGetAllPromotionsResponse } from '~/types/category.type';
 import { ApiError } from '~/common/errors/Api.error';
 import { toast } from '~/hooks/use-toast';
 import { useRouter } from 'next/navigation';
