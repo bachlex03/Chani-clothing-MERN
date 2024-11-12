@@ -17,7 +17,7 @@ services:
     volumes:
       - mongodb-data:/data/db
 
-  server:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
