@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.562182c1.css",
-    "main.js": "/static/js/main.88cd7c70.js",
+    "main.js": "/static/js/main.4b22c941.js",
     "static/js/453.615b5119.chunk.js": "/static/js/453.615b5119.chunk.js",
     "static/media/bg-3.png": "/static/media/bg-3.f58d37c3d2e51b44f65b.png",
     "static/media/bg-3-reverse.png": "/static/media/bg-3-reverse.f55443db7b070212ba98.png",
@@ -34,11 +34,11 @@
     "static/media/Dinner-Club.webp": "/static/media/Dinner-Club.6d3991bcacef2cfb9010.webp",
     "static/media/Visa-Card.webp": "/static/media/Visa-Card.6c254c5971b88b4ee167.webp",
     "main.562182c1.css.map": "/static/css/main.562182c1.css.map",
-    "main.88cd7c70.js.map": "/static/js/main.88cd7c70.js.map",
+    "main.4b22c941.js.map": "/static/js/main.4b22c941.js.map",
     "453.615b5119.chunk.js.map": "/static/js/453.615b5119.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.562182c1.css",
-    "static/js/main.88cd7c70.js"
+    "static/js/main.4b22c941.js"
   ]
 }
