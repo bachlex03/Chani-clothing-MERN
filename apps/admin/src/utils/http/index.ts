@@ -4,7 +4,7 @@ import { IHeaderOptions } from './header-options.interface';
 import { ApiError } from '~/common/errors/Api.error';
 import Cookies from 'js-cookie';
 
-const baseUrl = 'http://localhost:3001/api/v1/';
+const baseUrl = '/api/v1/';
 
 export const get = async (
    url: string,
