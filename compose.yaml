@@ -13,12 +13,12 @@ services:
     image: mongo:latest
     container_name: mongodb
     ports:
-      - 37017:27017 # External port 37017 maps to MongoDB's internal port 27017
+      - 27017:27017 # External port 37017 maps to MongoDB's internal port 27017
     expose:
       - 27017
     volumes:
       - mongodb-data:/data/db
-      - mongod.conf:/etc/mongod.conf
+      - ./mongod.conf:/etc/mongod.conf
 
   # backend:
   #   container_name: chani-backend
@@ -66,7 +66,7 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
-      - "27018:27018" # Expose 27018 for MongoDB access
+      # - "27018:27018" # Expose 27018 for MongoDB access
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
 
