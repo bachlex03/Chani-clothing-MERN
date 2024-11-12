@@ -1,65 +1,65 @@
 # version: "3.7"
 
 services:
-  # redis:
-  #   image: redis:alpine
-  #   container_name: redis
-  #   ports:
-  #     - 6379:6379
-  #   volumes:
-  #     - redis-data:/data
-
-  mongodb:
-    image: mongo:latest
-    container_name: mongodb
+  redis:
+    image: redis:alpine
+    container_name: redis
     ports:
-      - 27017:27017 # External port 37017 maps to MongoDB's internal port 27017
-    expose:
-      - 27017
+      - 6379:6379
     volumes:
-      - mongodb-data:/data/db
-      - ./mongod.conf:/etc/mongod.conf
+      - redis-data:/data
 
-  # backend:
-  #   container_name: chani-backend
-  #   build:
-  #     context: ./server
-  #     dockerfile: Dockerfile
+  # mongodb:
+  #   image: mongo:latest
+  #   container_name: mongodb
   #   ports:
-  #     - 3001:3001
-  #     # - 3002:3002 # Websocket port
-  #   environment:
-  #     - PORT=3001
-  #     - NODE_ENV=development
-  #   depends_on:
-  #     - redis
-  #     - mongodb
+  #     - 27017:27017 # External port 37017 maps to MongoDB's internal port 27017
   #   expose:
-  #     - 3001
+  #     - 27017
+  #   volumes:
+  #     - mongodb-data:/data/db
+  #     - ./mongod.conf:/etc/mongod.conf
 
-  # fe-user:
-  #   container_name: "chani-fe-user"
-  #   build:
-  #     context: ./apps/client
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "4000:80"
-  #   expose:
-  #     - 80
-  #   depends_on:
-  #     - backend
+  backend:
+    container_name: chani-backend
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+      # - 3002:3002 # Websocket port
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+    depends_on:
+      - redis
+      - mongodb
+    expose:
+      - 3001
 
-  # fe-admin:
-  #   container_name: chani-fe-admin
-  #   build:
-  #     context: ./apps/admin
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   expose:
-  #     - 3000
-  #   depends_on:
-  #     - backend
+  fe-user:
+    container_name: "chani-fe-user"
+    build:
+      context: ./apps/client
+      dockerfile: Dockerfile
+    ports:
+      - "4000:80"
+    expose:
+      - 80
+    depends_on:
+      - backend
+
+  fe-admin:
+    container_name: chani-fe-admin
+    build:
+      context: ./apps/admin
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    depends_on:
+      - backend
 
   nginx:
     container_name: chani-nginx
