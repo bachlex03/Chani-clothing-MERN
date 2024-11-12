@@ -10,3 +10,5 @@ COPY ./build /usr/share/nginx/html
 
 # Expose the necessary port for Nginx
 EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
