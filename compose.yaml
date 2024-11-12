@@ -18,6 +18,7 @@ services:
       - 27017
     volumes:
       - mongodb-data:/data/db
+      - mongod.conf:/etc/mongod.conf
 
   # backend:
   #   container_name: chani-backend
