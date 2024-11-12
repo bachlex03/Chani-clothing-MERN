@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const request = axios.create({
-  baseURL: '/',
+  baseURL: '',
   headers: {
     // 'Content-Type': 'application/x-www-form-urlencoded',
     Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -52,32 +52,32 @@ export const buildQueryParams = (options) => {
 export const get = async (path, options) => {
   const queryString = buildQueryParams(options);
 
-  const response = await request.get('api/v1/' + path + queryString);
+  const response = await request.get('/api/v1/' + path + queryString);
 
   return response.data;
 };
 
 export const post = async (path, options = {}) => {
-  const response = await request.post('api/v1/' + path, options);
+  const response = await request.post('/api/v1/' + path, options);
 
   return response.data;
 };
 
 export const put = async (path, options = {}) => {
-  const response = await request.put('api/v1/' + path, options);
+  const response = await request.put('/api/v1/' + path, options);
 
   return response;
 };
 
 export const patch = async (path, options = {}) => {
-  const response = await request.patch('api/v1/' + path, options);
+  const response = await request.patch('/api/v1/' + path, options);
 
   return response;
 };
 
 export const remove = async (path, options = {}) => {
   console.log('path', path);
-  const response = await request.delete('api/v1/' + path, options);
+  const response = await request.delete('/api/v1/' + path, options);
 
   return response;
 };
