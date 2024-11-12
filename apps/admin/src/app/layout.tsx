@@ -1,14 +1,7 @@
 import type { Metadata } from 'next';
 import '~/styles/globals.css';
-import { Roboto } from 'next/font/google';
 import { Toaster } from '~/components/ui/toaster';
 import { fontSans } from '~/fonts';
-
-const roboto = Roboto({
-   subsets: ['latin'],
-   variable: '--font-roboto',
-   weight: ['100', '300', '400', '500', '700', '900'],
-});
 
 export const metadata: Metadata = {
    title: 'Create Next App',

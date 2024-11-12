@@ -1,49 +1,8 @@
 /* eslint-disable react/no-unescaped-entities */
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import CategoryItem from '~/components/categoryItem';
-import Header from '~/components/Header';
-import { Button } from '~/components/ui/button';
-import { Checkbox } from '~/components/ui/checkbox';
-import {
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
-   DialogTrigger,
-} from '~/components/ui/dialog';
-import {
-   Form,
-   FormControl,
-   FormDescription,
-   FormField,
-   FormItem,
-   FormLabel,
-} from '~/components/ui/form';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
-import {
-   Popover,
-   PopoverContent,
-   PopoverTrigger,
-} from '~/components/ui/popover';
 import { toast } from '~/hooks/use-toast';
-import { cn } from '~/lib/utils';
-import { FaCaretRight, FaCheck } from 'react-icons/fa';
-import {
-   Command,
-   CommandEmpty,
-   CommandGroup,
-   CommandInput,
-   CommandItem,
-   CommandList,
-} from '~/components/ui/command';
 import CreateCategoryModel from '~/components/create-category-model';
 import { IGetAllCategoriesResponse } from '~/types/category.type';
 import * as categoryService from '~/services/categories.service';

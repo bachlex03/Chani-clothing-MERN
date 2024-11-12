@@ -1,17 +1,15 @@
 'use client';
 
 import { ScrollArea } from '~/components/ui/scroll-area';
-import { Separator } from '~/components/ui/separator';
 import { AppCardContent } from './app-card';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
-import { Label } from './ui/label';
 import { Input } from './ui/input';
 import {
    IGetAllCategoriesResponse,
    IUpdateCategoryPayload,
 } from '~/types/category.type';
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

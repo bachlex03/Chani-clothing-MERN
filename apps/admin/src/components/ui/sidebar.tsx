@@ -18,7 +18,6 @@ import {
    TooltipProvider,
    TooltipTrigger,
 } from '~/components/ui/tooltip';
-import Header from '../Header';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -216,7 +215,7 @@ const Sidebar = React.forwardRef<
                   }
                   side={side}
                >
-                  <div className="flex h-full w-full flex-col">{children}</div>
+                  <div className="flex flex-col w-full h-full">{children}</div>
                </SheetContent>
             </Sheet>
          );
@@ -225,7 +224,7 @@ const Sidebar = React.forwardRef<
       return (
          <div
             ref={ref}
-            className="group peer hidden md:block text-sidebar-foreground"
+            className="hidden group peer md:block text-sidebar-foreground"
             data-state={state}
             data-collapsible={state === 'collapsed' ? collapsible : ''}
             data-variant={variant}
@@ -682,7 +681,7 @@ const SidebarMenuSkeleton = React.forwardRef<
       >
          {showIcon && (
             <Skeleton
-               className="size-4 rounded-md"
+               className="rounded-md size-4"
                data-sidebar="menu-skeleton-icon"
             />
          )}

@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import '~/styles/globals.css';
 import Image from 'next/image';
 import images from '../../../public/images';
-import { createContext } from 'react';
 
 export const metadata: Metadata = {
    title: 'Create Next App',
