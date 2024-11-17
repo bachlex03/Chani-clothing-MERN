@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import {
@@ -15,10 +16,12 @@ import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { authSchema } from '~/schemaValidations/authSchema';
 import * as authServices from '~/services/auth/login.services';
+import * as userServices from '~/services/user.service';
 import { ApiError } from '~/common/errors/Api.error';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { toast } from '~/hooks/use-toast';
+import { useEffect } from 'react';
 
 export default function Login() {
    const router = useRouter();
@@ -58,8 +61,31 @@ export default function Login() {
       }
    };
 
+   useEffect(() => {
+      if (!Cookies.get('access-token')) {
+         return;
+      }
+
+      const result = userServices.getProfile();
+
+      if (result instanceof ApiError) {
+         console.log(result.errorResponse);
+
+         toast({
+            variant: 'destructive',
+            title: `Session expired. Please login again`,
+         });
+
+         router.push('/auth/login');
+
+         return;
+      }
+
+      router.push('/dashboards');
+   }, []);
+
    return (
-      <div className="container h-screen flex items-center">
+      <div className="container flex items-center h-screen">
          <div className="w-full p-[32px] rounded-xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)]">
             <h2 className="text-[42px] font-bold dark:text-black">
                Administrator login
@@ -78,7 +104,7 @@ export default function Login() {
                                     <Input
                                        placeholder="Email"
                                        {...field}
-                                       className="rounded-xl"
+                                       className="rounded-xl dark:bg-slate-50 dark:text-five text-five"
                                        type="email"
                                        required={true}
                                     />
@@ -102,7 +128,7 @@ export default function Login() {
                                     <Input
                                        placeholder="password"
                                        {...field}
-                                       className="rounded-xl"
+                                       className="rounded-xl dark:bg-slate-50 dark:hover:bg-slate-50 dark:text-five text-five"
                                        type="password"
                                        required={true}
                                     />
@@ -112,7 +138,10 @@ export default function Login() {
                            )}
                         />
                      </div>
-                     <Button className="w-full rounded-3xl mt-5" type="submit">
+                     <Button
+                        className="w-full mt-5 rounded-3xl dark:bg-five dark:text-white dark:hover:bg-five/80 dark:hover:text-white"
+                        type="submit"
+                     >
                         Sign in
                      </Button>
                   </form>

@@ -5,12 +5,9 @@ import DashBoardSidebar from '~/components/DashboardSidebar';
 import Header from '~/components/Header';
 import { ThemeProvider } from '~/components/themesProvider';
 import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
+import { withAuth } from '~/hooks/with-auth';
 
-export default function DashboardLayout({
-   children,
-}: {
-   children: React.ReactNode;
-}) {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
    const [isMounted, setIsMounted] = useState(false);
 
    // Ensure theme provider only renders on the client
@@ -40,4 +37,6 @@ export default function DashboardLayout({
          </SidebarProvider>
       </div>
    );
-}
+};
+
+export default withAuth(DashboardLayout);

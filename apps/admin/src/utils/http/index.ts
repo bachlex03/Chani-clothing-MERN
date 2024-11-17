@@ -3,8 +3,7 @@ import { serializeUrl } from '../serializer';
 import { IHeaderOptions } from './header-options.interface';
 import { ApiError } from '~/common/errors/Api.error';
 import Cookies from 'js-cookie';
-
-const baseUrl = '/api/v1/';
+import { environments } from '~/environments';
 
 export const get = async (
    url: string,
@@ -14,7 +13,7 @@ export const get = async (
    const serializedUrl = serializeUrl(url, params);
 
    try {
-      const response = await fetch(baseUrl + serializedUrl, {
+      const response = await fetch(environments.API_URL + serializedUrl, {
          method: 'GET',
          headers: {
             'Content-Type': 'application/json',
@@ -51,7 +50,7 @@ export const post = async <IRequest>(
    const serializedUrl = serializeUrl(url);
 
    try {
-      const response = await fetch(baseUrl + serializedUrl, {
+      const response = await fetch(environments.API_URL + serializedUrl, {
          method: 'POST',
          headers: {
             'Content-Type': 'application/json',

@@ -37,7 +37,7 @@ export const ProductDataTable = () => {
    const [loading, setLoading] = useState(false);
 
    const [pageIndex, setPageIndex] = useState(0);
-   const [pageSize] = useState(7);
+   const [pageSize] = useState(5);
 
    const table = useReactTable({
       data: products,
