@@ -34,6 +34,8 @@ import * as categoryServices from '~/services/categories.service';
 import * as productServices from '~/services/products.service';
 import Loading from './loading';
 import { ICreateProductPayload, IProductImage } from '~/types/product.type';
+import AppUploadDialog from '~/components/app-upload-dialog';
+import { IoReloadCircleSharp } from 'react-icons/io5';
 
 const statusOptions = [
    {
@@ -167,6 +169,7 @@ const FormSchema = z.object({
 
 export default function CreateProductAside() {
    const [name, setName] = useState('');
+   const [imagePreview, setImagePreview] = useState<string>('');
    const [description, setDescription] = useState('');
    const [price, SetPrice] = useState(0);
    const [quantity, setQuantity] = useState(0);
@@ -247,6 +250,27 @@ export default function CreateProductAside() {
          description: 'Product has been created successfully.',
       });
    }
+
+   const reloadImages = async () => {
+      setLoading(true);
+
+      const response = (await cloudinaryService.getAllImages()) as
+         | ICloudinaryResponse
+         | ApiError;
+
+      if (response instanceof ApiError) {
+         setLoading(false);
+         return toast({
+            title: 'Error',
+            description: response.message,
+            variant: 'destructive',
+         });
+      }
+
+      setLoading(false);
+
+      setImages(response.resources);
+   };
 
    useEffect(() => {
       const fetchingImages = async () => {
@@ -435,11 +459,36 @@ export default function CreateProductAside() {
                                  </div>
 
                                  <div className="">
-                                    <h2 className="text-sm font-semibold">
-                                       Product images
-                                    </h2>
+                                    <span className="flex items-center gap-5">
+                                       <h2 className="text-sm font-semibold">
+                                          Product images
+                                       </h2>
+                                       {/* <Button
+                                          type="button"
+                                          className="px-2 py-1 text-xs h-7"
+                                       >
+                                          + Upload image
+                                       </Button> */}
+
+                                       <div
+                                          className="inline-block px-2 py-1 text-xs rounded-md cursor-pointer bg-blue-700/40 hover:bg-blue-700 h-7"
+                                          onClick={() => {
+                                             reloadImages();
+                                          }}
+                                       >
+                                          <span className="flex items-center justify-center">
+                                             <i className="flex items-center justify-center">
+                                                <IoReloadCircleSharp className="mr-3 text-xl font-bold text-slate-50" />
+                                             </i>
+                                             <p className="font-medium text-slate-50">
+                                                Reload
+                                             </p>
+                                          </span>
+                                       </div>
+                                    </span>
+                                    <AppUploadDialog />
                                     <div className="mt-5 border rounded-md dark:border-slate-500/50">
-                                       <ScrollArea className="rounded-md min-h-[250px] max-h-[500px]">
+                                       <ScrollArea className="rounded-md min-h-[250px] max-h-[500px] overflow-y-auto">
                                           <div className="">
                                              {/* <div className="p-3 bg-[#1f2e44] rounded-md">
                                                 <div className="relative h-[200px]">
@@ -456,7 +505,7 @@ export default function CreateProductAside() {
                                                 control={form.control}
                                                 name="images"
                                                 render={() => (
-                                                   <FormItem className="grid grid-cols-4 gap-5 p-3">
+                                                   <FormItem className="grid grid-cols-3 gap-5 p-3">
                                                       {images.map((item) => (
                                                          <FormField
                                                             key={item.public_id}
@@ -483,6 +532,45 @@ export default function CreateProductAside() {
                                                                            onCheckedChange={(
                                                                               checked,
                                                                            ) => {
+                                                                              const imageArr =
+                                                                                 form.watch(
+                                                                                    'images',
+                                                                                 );
+
+                                                                              console.log(
+                                                                                 imageArr,
+                                                                              );
+
+                                                                              const notEmptyArr =
+                                                                                 checked
+                                                                                    ? item.secure_url
+                                                                                    : '';
+
+                                                                              if (
+                                                                                 checked
+                                                                              ) {
+                                                                                 setImagePreview(
+                                                                                    notEmptyArr,
+                                                                                 );
+                                                                              } else if (
+                                                                                 imageArr.length ===
+                                                                                 1
+                                                                              ) {
+                                                                                 setImagePreview(
+                                                                                    '',
+                                                                                 );
+                                                                              }
+
+                                                                              if (
+                                                                                 checked &&
+                                                                                 imageArr.length ===
+                                                                                    1
+                                                                              ) {
+                                                                                 setImagePreview(
+                                                                                    imageArr[0],
+                                                                                 );
+                                                                              }
+
                                                                               return checked
                                                                                  ? field.onChange(
                                                                                       [
@@ -590,8 +678,11 @@ export default function CreateProductAside() {
                            <div className="w-[240px] h-[240px] mt-5 rounded-xl bg-[#121f31]">
                               <div className="flex justify-center items-center h-[100%]">
                                  <img
-                                    src="https://themesdesign.in/tailwick/html-dark/assets/images/img-03.png"
-                                    className="w-[200px] h-[200px]"
+                                    src={
+                                       imagePreview ||
+                                       'https://themesdesign.in/tailwick/html-dark/assets/images/img-03.png'
+                                    }
+                                    className="w-[200px] h-[200px] object-cover"
                                     alt="sample image"
                                  />
                               </div>

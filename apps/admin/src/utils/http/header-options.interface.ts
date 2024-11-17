@@ -1,4 +1,6 @@
+type ContentType = 'application-json';
+
 export interface IHeaderOptions {
-   'Content-Type'?: 'application-json' | 'application-x-www-form-urlencoded';
+   'Content-Type'?: ContentType;
    // Authorization?: string;
 }

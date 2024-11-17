@@ -21,10 +21,12 @@ import { ApiError } from '~/common/errors/Api.error';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import { toast } from '~/hooks/use-toast';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { withNoAuth } from '~/hooks/with-no-auth-hoc';
 
-export default function Login() {
+const Login = () => {
    const router = useRouter();
+   const [loading, setLoading] = useState(true); // Added loading state
 
    const form = useForm<z.infer<typeof authSchema>>({
       resolver: zodResolver(authSchema),
@@ -62,27 +64,41 @@ export default function Login() {
    };
 
    useEffect(() => {
-      if (!Cookies.get('access-token')) {
-         return;
-      }
+      const checkAuth = async () => {
+         const token = Cookies.get('access-token');
+         if (!token) {
+            setLoading(false); // No token, stop loading
+            return;
+         }
 
-      const result = userServices.getProfile();
+         const result = await userServices.getProfile();
 
-      if (result instanceof ApiError) {
-         console.log(result.errorResponse);
+         if (result instanceof ApiError) {
+            console.log(result.errorResponse);
 
-         toast({
-            variant: 'destructive',
-            title: `Session expired. Please login again`,
-         });
+            toast({
+               variant: 'destructive',
+               title: `Session expired. Please login again`,
+            });
 
-         router.push('/auth/login');
+            setLoading(false); // Token invalid, stop loading
+            return;
+         }
 
-         return;
-      }
+         // Valid token, redirect
+         router.push('/dashboards');
+      };
 
-      router.push('/dashboards');
-   }, []);
+      checkAuth();
+   }, [router]);
+
+   if (loading) {
+      return (
+         <div className="flex items-center justify-center h-screen">
+            Loading...
+         </div>
+      );
+   }
 
    return (
       <div className="container flex items-center h-screen">
@@ -150,4 +166,6 @@ export default function Login() {
          </div>
       </div>
    );
-}
+};
+
+export default withNoAuth(Login);

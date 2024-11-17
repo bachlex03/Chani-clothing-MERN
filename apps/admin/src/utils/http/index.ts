@@ -50,10 +50,14 @@ export const post = async <IRequest>(
    const serializedUrl = serializeUrl(url);
 
    try {
+      const isFormData = body instanceof FormData;
+
       const response = await fetch(environments.API_URL + serializedUrl, {
          method: 'POST',
          headers: {
-            'Content-Type': 'application/json',
+            ...(isFormData
+               ? {} // Let the browser set the Content-Type for FormData
+               : { 'Content-Type': 'application/json' }),
             ...(Cookies.get('access-token')
                ? {
                     Authorization: `Bearer ${Cookies.get('access-token')}`,
@@ -61,7 +65,7 @@ export const post = async <IRequest>(
                : {}),
             ...options,
          },
-         body: JSON.stringify(body),
+         body: isFormData ? body : JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -88,7 +92,7 @@ export const put = async <IRequest>(
    const serializedUrl = serializeUrl(url);
 
    try {
-      const response = await fetch(baseUrl + serializedUrl, {
+      const response = await fetch(environments.API_URL + serializedUrl, {
          method: 'PUT',
          headers: {
             'Content-Type': 'application/json',
@@ -122,7 +126,7 @@ export const remove = async (url: string, options: IHeaderOptions = {}) => {
    const serializedUrl = serializeUrl(url);
 
    try {
-      const response = await fetch(baseUrl + serializedUrl, {
+      const response = await fetch(environments.API_URL + serializedUrl, {
          method: 'DELETE',
          headers: {
             'Content-Type': 'application/json',
