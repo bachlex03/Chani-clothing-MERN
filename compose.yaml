@@ -65,7 +65,7 @@ services:
       - backend
 
   nginx:
-    container_name: chani-nginx
+    container_name: chani-nginx-client
     image: nginx:alpine
     ports:
       - "80:80"
