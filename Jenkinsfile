@@ -14,7 +14,7 @@ pipeline {
 
         stage("Build and Deploy images") {
             steps {
-                withDockerRegistry(credentialsId: "${dockerHubCredentials}", url: 'https://index.docker.io/v1/') {
+                withDockerRegistry(credentialsId: "${dockerRegistryCredential}", url: 'https://index.docker.io/v1/') {
                     sh label: "build images", script: "docker compose build"
                     sh label: "deploy images", script: "docker compose push"
                 }
