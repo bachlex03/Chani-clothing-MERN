@@ -372,7 +372,7 @@ export default function ProductDialog(props: ProductDialogProps) {
 
                               <div className="w-[100%] flex justify-end">
                                  <Button type="submit" className="text-right">
-                                    Create new
+                                    Update
                                  </Button>
                               </div>
                            </form>

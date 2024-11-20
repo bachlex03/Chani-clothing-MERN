@@ -45,7 +45,15 @@ export default function AppInput(props: AppInputProps) {
                      onChange={(e) => {
                         if (props.setValue) {
                            field.onChange(e);
-                           props.setValue(e.target.value);
+
+                           if (
+                              props.type === 'number' &&
+                              e.target.value.startsWith('0')
+                           ) {
+                              props.setValue(e.target.value.slice(1));
+                           } else {
+                              props.setValue(e.target.value);
+                           }
                         }
                      }}
                   />

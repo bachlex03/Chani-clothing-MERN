@@ -150,7 +150,7 @@ const FormSchema = z.object({
    price: z
       .any()
       .refine((price) => Number(price) > 0, {
-         message: 'Price must be at least 1.',
+         message: 'Price must be greater than 0$.',
       })
       .transform((value) => Number(value)),
    quantity: z

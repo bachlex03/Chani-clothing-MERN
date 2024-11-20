@@ -21,6 +21,7 @@ services:
   #     - ./mongod.conf:/etc/mongod.conf
 
   backend:
+    image: baledev/chani-backend:latest
     container_name: chani-backend
     build:
       context: ./server
@@ -38,6 +39,7 @@ services:
       - 3001
 
   fe-user:
+    image: baledev/chani-fe-user:latest
     container_name: "chani-fe-user"
     build:
       context: ./apps/client
@@ -50,6 +52,7 @@ services:
       - backend
 
   fe-admin:
+    image: baledev/chani-fe-admin:latest
     container_name: chani-fe-admin
     build:
       context: ./apps/admin
