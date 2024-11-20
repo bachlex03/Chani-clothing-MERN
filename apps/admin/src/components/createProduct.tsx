@@ -463,13 +463,6 @@ export default function CreateProductAside() {
                                        <h2 className="text-sm font-semibold">
                                           Product images
                                        </h2>
-                                       {/* <Button
-                                          type="button"
-                                          className="px-2 py-1 text-xs h-7"
-                                       >
-                                          + Upload image
-                                       </Button> */}
-
                                        <div
                                           className="inline-block px-2 py-1 text-xs rounded-md cursor-pointer bg-blue-700/40 hover:bg-blue-700 h-7"
                                           onClick={() => {

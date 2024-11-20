@@ -21,7 +21,7 @@ import { toast } from '~/hooks/use-toast';
 export default function AppUploadDialog({
    maxFiles = 5,
    maxFileSize = 5 * 1024 * 1024, // 5MB
-   acceptedFileTypes = ['image/jpeg', 'image/png', 'image/gif'],
+   acceptedFileTypes = ['image/jpeg', 'image/png', 'image/webp'],
 }: {
    maxFiles?: number;
    maxFileSize?: number;

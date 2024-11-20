@@ -14,9 +14,10 @@ import {
 import { DropdownMenuContent, DropdownMenuTrigger } from './ui/dropdown-menu';
 import Link from 'next/link';
 import { MdOutlineSpaceDashboard, MdOutlineDiscount } from 'react-icons/md';
-import { TbBrandProducthunt, TbCategory } from 'react-icons/tb';
+import { TbBrandProducthunt, TbCategory, TbFileInvoice } from 'react-icons/tb';
 import { ChevronUp, User2 } from 'lucide-react';
 import { PiSignOutBold } from 'react-icons/pi';
+import Cookies from 'js-cookie';
 
 const applicationItems = [
    {
@@ -32,11 +33,11 @@ const usuallyItems = [
       url: '/dashboards/products',
       icon: <TbBrandProducthunt className="text-[18px] ml-3" />,
    },
-   // {
-   //    title: 'Invoices',
-   //    url: '/dashboards/invoices',
-   //    icon: <TbFileInvoice className="text-[18px] ml-3" />,
-   // },
+   {
+      title: 'Invoices',
+      url: '/dashboards/invoices',
+      icon: <TbFileInvoice className="text-[18px] ml-3" />,
+   },
 ];
 
 const otherItems = [
@@ -132,7 +133,13 @@ export default function DashBoardSidebar() {
                         side="top"
                         className="w-[--radix-popper-anchor-width] dark:bg-four"
                      >
-                        <DropdownMenuItem className="flex items-center py-1 dark:hover:bg-slate-600">
+                        <DropdownMenuItem
+                           className="flex items-center py-1 dark:hover:bg-slate-600"
+                           onClick={() => {
+                              Cookies.remove('access-token');
+                              window.location.href = '/auth/login';
+                           }}
+                        >
                            <i className="ml-2">
                               <PiSignOutBold />
                            </i>
