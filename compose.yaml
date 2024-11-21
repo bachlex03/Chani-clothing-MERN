@@ -9,19 +9,7 @@ services:
     volumes:
       - redis-data:/data
 
-  # mongodb:
-  #   image: mongo:latest
-  #   container_name: mongodb
-  #   ports:
-  #     - 27017:27017 # External port 37017 maps to MongoDB's internal port 27017
-  #   expose:
-  #     - 27017
-  #   volumes:
-  #     - mongodb-data:/data/db
-  #     - ./mongod.conf:/etc/mongod.conf
-
   backend:
-    # image: baledev/chani-backend:latest
     container_name: chani-backend
     build:
       context: ./server
@@ -39,7 +27,6 @@ services:
       - 3001
 
   fe-user:
-    # image: baledev/chani-fe-user:latest
     container_name: "chani-fe-user"
     build:
       context: ./apps/client
@@ -52,7 +39,6 @@ services:
       - backend
 
   fe-admin:
-    # image: baledev/chani-fe-admin:latest
     container_name: chani-fe-admin
     build:
       context: ./apps/admin
