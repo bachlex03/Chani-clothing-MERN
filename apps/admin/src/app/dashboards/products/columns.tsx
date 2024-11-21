@@ -241,6 +241,8 @@ export const productColumns: ColumnDef<IProductResponse>[] = [
                      type={row.original.product_type}
                      gender={row.original.product_gender}
                      imageUrl={row.original.product_imgs[0].secure_url}
+                     product_colors={row.original.product_colors}
+                     product_sizes={row.original.product_sizes}
                   />
                ) : null}
 

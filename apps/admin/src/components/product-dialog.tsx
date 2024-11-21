@@ -92,6 +92,14 @@ const genderOptions = [
    },
 ];
 
+const ColorsHash = {
+   BROWN: '#422006',
+   RED: '#dc2626',
+   GREY: '#808080',
+   YELLOW: '#ffff00',
+   PINK: '#ffc0cb',
+};
+
 const FormSchema = z.object({
    name: z
       .string()
@@ -135,6 +143,8 @@ export type ProductDialogProps = {
    categoryId: string;
    type: string;
    gender: string;
+   product_sizes: string[];
+   product_colors: string[];
    imageUrl: string;
 };
 
@@ -412,6 +422,36 @@ export default function ProductDialog(props: ProductDialogProps) {
                         <p className="self-start mt-1 text-sm font-medium text-slate-300">
                            Woman's Fashion
                         </p>
+
+                        <p className="self-start mt-2 text-xs font-medium">
+                           Colors
+                        </p>
+                        <span className="flex self-start">
+                           {props.product_colors.map((color, index) => (
+                              <span
+                                 key={index}
+                                 className="w-6 h-6 mt-2 mr-2 text-xs border rounded-md"
+                                 style={{
+                                    backgroundColor:
+                                       ColorsHash[
+                                          color.toUpperCase() as keyof typeof ColorsHash
+                                       ],
+                                 }}
+                              ></span>
+                           ))}
+                        </span>
+
+                        <p className="self-start mt-2 text-xs font-medium">
+                           Sizes
+                        </p>
+                        {props.product_sizes.map((size, index) => (
+                           <span
+                              key={index}
+                              className="self-start px-2 py-1 mt-2 text-xs border rounded-md"
+                           >
+                              {size}
+                           </span>
+                        ))}
 
                         <p className="self-start mt-5 text-sm dark:text-slate-400">
                            {description ||
