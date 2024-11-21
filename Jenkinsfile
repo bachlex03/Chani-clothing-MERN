@@ -25,7 +25,7 @@ pipeline {
             steps {
                 sh label: "down", script: "docker compose --env-file ./server/.env down"
                 sh "echo y | docker container prune -f"
-                sh label: "deploy", script: "docker compose --env-file ./server/.env up -d"
+                sh label: "deploy", script: "docker compose --env-file ./server/.env up -d --build"
                 sh label: "logs", script: "docker ps -a"
             }
         }
