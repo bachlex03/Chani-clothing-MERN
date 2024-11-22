@@ -95,7 +95,7 @@ class AccessService {
     // Compare mailToken with token in redis
     const { email } = decodedToken;
 
-    const redisToken = await RedisService.get(`${email}:token`);
+    const redisToken = RedisService.get(`${email}:token`);
 
     if (mailToken != redisToken) {
       throw new BadRequestError("Something went wrong");
