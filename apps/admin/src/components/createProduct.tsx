@@ -582,7 +582,7 @@ export default function CreateProductAside() {
                                                                         />
                                                                      </FormControl>
                                                                      <div className="p-3 bg-[#1f2e44] rounded-md">
-                                                                        <div className="relative h-[500px]">
+                                                                        <div className="relative h-[300px]">
                                                                            <Image
                                                                               src={
                                                                                  item.secure_url

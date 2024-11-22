@@ -73,7 +73,7 @@ class AccessService {
       mailToken: randomToken,
     });
 
-    await RedisService.set(`${email}:token`, randomToken);
+    RedisService.set(`${email}:token`, randomToken);
 
     return {
       message: "Sended !",

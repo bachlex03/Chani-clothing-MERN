@@ -395,7 +395,7 @@ export default function ProductDialog(props: ProductDialogProps) {
                </div>
 
                <div className="w-[27%]">
-                  <ScrollArea className="h-[80%] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
+                  <ScrollArea className="h-[70%] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
                      <div className="flex flex-col items-center w-full px-5">
                         <h2 className="text-xl font-bold">
                            Product card preview

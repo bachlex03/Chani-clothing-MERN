@@ -51,6 +51,8 @@ export default function DashboardLayout() {
       total_product_actives: 0,
    });
 
+   console.log(dashboard);
+
    const getDashboard = async () => {
       const result = await adminServices.getDashboard();
 
@@ -136,7 +138,7 @@ export default function DashboardLayout() {
                   icon={CardData[3].icon}
                />
             </div>
-            <section className="grid grid-cols-1 gap-5 mt-5 transition-all lg:grid-cols-3">
+            <section className="grid grid-cols-2 gap-5 mt-5 transition-all lg:grid-cols-3">
                <AppCardContent className="col-span-2 border-none shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)]">
                   <AppBarChart />
                </AppCardContent>
