@@ -52,6 +52,8 @@ export type PromotionDialogProps = {
    value: string;
    startDate: string;
    endDate: string;
+   // categoryId: string;
+   reloadFunction: () => void;
 };
 
 export const UpdatePromotionSchema = z.object({
@@ -117,7 +119,7 @@ export default function PromotionDialog(props: PromotionDialogProps) {
 
             toast({
                variant: 'destructive',
-               title: `Account ${result.errorResponse?.message}`,
+               title: `${result.errorResponse?.message}`,
                description: `There was a problem with your request. ${result.errorResponse?.code}`,
             });
 
@@ -145,8 +147,6 @@ export default function PromotionDialog(props: PromotionDialogProps) {
    const onUpdate = async (data: z.infer<typeof UpdatePromotionSchema>) => {
       setLoading(true);
 
-      console.log('data', data);
-
       const result = await promotionServices.updatePromotion('', data);
 
       if (result instanceof ApiError) {
@@ -154,7 +154,7 @@ export default function PromotionDialog(props: PromotionDialogProps) {
 
          toast({
             variant: 'destructive',
-            title: `Account ${result.errorResponse?.message}`,
+            title: `${result.errorResponse?.message}`,
             description: `There was a problem with your request. ${result.errorResponse?.code}`,
          });
 
@@ -164,20 +164,16 @@ export default function PromotionDialog(props: PromotionDialogProps) {
       }
 
       toast({
-         title: 'Login successful',
-         className: 'text-white dark:text-white',
-         description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-               <code className="text-white">
-                  {JSON.stringify(data, null, 2)}
-               </code>
-            </pre>
-         ),
+         title: 'Updated successfully',
+         description: 'Promotion updated successfully.',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
       });
 
       setTimeout(() => {
          setLoading(false);
       }, 500);
+
+      props.reloadFunction();
    };
 
    useEffect(() => {
@@ -203,7 +199,7 @@ export default function PromotionDialog(props: PromotionDialogProps) {
                         name="id"
                         render={({ field }) => (
                            <FormItem className="grid items-center grid-cols-3 gap-4 mb-5">
-                              <FormLabel htmlFor="id">Name</FormLabel>
+                              <FormLabel htmlFor="id"></FormLabel>
                               <FormControl>
                                  <Input
                                     id="id"
@@ -372,7 +368,7 @@ export default function PromotionDialog(props: PromotionDialogProps) {
                                                      category._id ===
                                                      field.value,
                                                )?.category_name
-                                             : 'Select category'}
+                                             : 'Select a category'}
                                           <ChevronsUpDown className="opacity-50" />
                                        </Button>
                                     </FormControl>

@@ -146,6 +146,7 @@ export type ProductDialogProps = {
    product_sizes: string[];
    product_colors: string[];
    imageUrl: string;
+   reloadFunction: () => void;
 };
 
 export default function ProductDialog(props: ProductDialogProps) {
@@ -170,7 +171,7 @@ export default function ProductDialog(props: ProductDialogProps) {
 
             toast({
                variant: 'destructive',
-               title: `Account ${result.errorResponse?.message}`,
+               title: `${result.errorResponse?.message}`,
                description: `There was a problem with your request. ${result.errorResponse?.code}`,
             });
 
@@ -242,6 +243,8 @@ export default function ProductDialog(props: ProductDialogProps) {
          description: 'Product has been updated successfully.',
          className: 'bg-green-300',
       });
+
+      props.reloadFunction();
    }
 
    useEffect(() => {
@@ -392,7 +395,7 @@ export default function ProductDialog(props: ProductDialogProps) {
                </div>
 
                <div className="w-[27%]">
-                  <ScrollArea className="h-[97%] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
+                  <ScrollArea className="h-[80%] w-[100%] mt-5 rounded-md border p-4 dark:bg-five">
                      <div className="flex flex-col items-center w-full px-5">
                         <h2 className="text-xl font-bold">
                            Product card preview
@@ -444,14 +447,16 @@ export default function ProductDialog(props: ProductDialogProps) {
                         <p className="self-start mt-2 text-xs font-medium">
                            Sizes
                         </p>
-                        {props.product_sizes.map((size, index) => (
-                           <span
-                              key={index}
-                              className="self-start px-2 py-1 mt-2 text-xs border rounded-md"
-                           >
-                              {size}
-                           </span>
-                        ))}
+                        <span className="flex self-start">
+                           {props.product_sizes.map((size, index) => (
+                              <span
+                                 key={index}
+                                 className="self-start px-2 py-1 mt-2 mr-2 text-xs border rounded-md"
+                              >
+                                 {size}
+                              </span>
+                           ))}
+                        </span>
 
                         <p className="self-start mt-5 text-sm dark:text-slate-400">
                            {description ||

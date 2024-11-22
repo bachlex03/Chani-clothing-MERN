@@ -249,6 +249,8 @@ export default function CreateProductAside() {
          title: 'Success',
          description: 'Product has been created successfully.',
       });
+
+      document.location.reload();
    }
 
    const reloadImages = async () => {
@@ -300,7 +302,7 @@ export default function CreateProductAside() {
 
             toast({
                variant: 'destructive',
-               title: `Account ${result.errorResponse?.message}`,
+               title: `${result.errorResponse?.message}`,
                description: `There was a problem with your request. ${result.errorResponse?.code}`,
             });
 
@@ -530,10 +532,6 @@ export default function CreateProductAside() {
                                                                                     'images',
                                                                                  );
 
-                                                                              console.log(
-                                                                                 imageArr,
-                                                                              );
-
                                                                               const notEmptyArr =
                                                                                  checked
                                                                                     ? item.secure_url
@@ -584,7 +582,7 @@ export default function CreateProductAside() {
                                                                         />
                                                                      </FormControl>
                                                                      <div className="p-3 bg-[#1f2e44] rounded-md">
-                                                                        <div className="relative h-[200px]">
+                                                                        <div className="relative h-[500px]">
                                                                            <Image
                                                                               src={
                                                                                  item.secure_url

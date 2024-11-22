@@ -53,7 +53,9 @@ const deleteProductSchema = z.object({
    id: z.string().min(1),
 });
 
-export const productColumns: ColumnDef<IProductResponse>[] = [
+export const productColumns = (
+   getAllProducts: () => void,
+): ColumnDef<IProductResponse>[] => [
    {
       accessorKey: 'product_code',
       header: 'Product Code',
@@ -77,7 +79,7 @@ export const productColumns: ColumnDef<IProductResponse>[] = [
          const product = row.original;
          return (
             <div className="capitalize">
-               {product.product_category.category_name}
+               {product.product_category?.category_name}
             </div>
          );
       },
@@ -179,6 +181,8 @@ export const productColumns: ColumnDef<IProductResponse>[] = [
                title: 'Delete Success',
                description: 'Promotion deleted successfully',
             });
+
+            getAllProducts();
          };
 
          return (
@@ -243,6 +247,7 @@ export const productColumns: ColumnDef<IProductResponse>[] = [
                      imageUrl={row.original.product_imgs[0].secure_url}
                      product_colors={row.original.product_colors}
                      product_sizes={row.original.product_sizes}
+                     reloadFunction={getAllProducts}
                   />
                ) : null}
 

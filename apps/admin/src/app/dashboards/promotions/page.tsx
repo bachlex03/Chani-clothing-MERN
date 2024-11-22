@@ -19,36 +19,34 @@ export default function DashboardPromotions() {
 
    const [loading, setLoading] = useState(false);
 
-   useEffect(() => {
-      async function getAllCategories() {
-         const result = (await categoryServices.getAllCategories()) as
-            | IGetAllCategoriesResponse[]
-            | ApiError
-            | null;
+   async function getAllCategories() {
+      const result = (await categoryServices.getAllCategories()) as
+         | IGetAllCategoriesResponse[]
+         | ApiError
+         | null;
 
-         if (result instanceof ApiError) {
-            console.log(result.errorResponse);
+      if (result instanceof ApiError) {
+         toast({
+            variant: 'destructive',
+            title: `${result.errorResponse?.message}`,
+            description: `There was a problem with your request. ${result.errorResponse?.code}`,
+         });
 
-            toast({
-               variant: 'destructive',
-               title: `Account ${result.errorResponse?.message}`,
-               description: `There was a problem with your request. ${result.errorResponse?.code}`,
-            });
-
-            return;
-         }
-
-         const categories = result?.filter(
-            (cate) => cate.category_parentId !== null,
-         ) as IGetAllCategoriesResponse[];
-
-         setCategories(categories as IGetAllCategoriesResponse[]);
-
-         setTimeout(() => {
-            setLoading(false);
-         }, 500);
+         return;
       }
 
+      const categories = result?.filter(
+         (cate) => cate.category_parentId !== null,
+      ) as IGetAllCategoriesResponse[];
+
+      setCategories(categories as IGetAllCategoriesResponse[]);
+
+      setTimeout(() => {
+         setLoading(false);
+      }, 500);
+   }
+
+   useEffect(() => {
       getAllCategories();
    }, []);
 
@@ -60,7 +58,10 @@ export default function DashboardPromotions() {
 
          <div className=" bg-primary h-[85vh] mx-8 mt-20 px-5 rounded-lg">
             <div className="flex justify-end pt-5">
-               <CreatePromotionDialog categories={categories} />
+               <CreatePromotionDialog
+                  categories={categories}
+                  reloadFunction={getAllCategories}
+               />
             </div>
 
             <div className="pt-5 mx-auto">

@@ -31,11 +31,9 @@ export default function DashboardCategories() {
          | null;
 
       if (result instanceof ApiError) {
-         console.log(result.errorResponse);
-
          toast({
             variant: 'destructive',
-            title: `Account ${result.errorResponse?.message}`,
+            title: `${result.errorResponse?.message}`,
             description: `There was a problem with your request. ${result.errorResponse?.code}`,
          });
 
@@ -65,11 +63,9 @@ export default function DashboardCategories() {
             | null;
 
          if (result instanceof ApiError) {
-            console.log(result.errorResponse);
-
             toast({
                variant: 'destructive',
-               title: `Account ${result.errorResponse?.message}`,
+               title: `${result.errorResponse?.message}`,
                description: `There was a problem with your request. ${result.errorResponse?.code}`,
             });
 
@@ -118,6 +114,7 @@ export default function DashboardCategories() {
                        key={index}
                        categories={categories}
                        parentCategory={category}
+                       reloadFunction={getAllCategories}
                     />
                  ))}
             {/* {parentCategories.map((category, index) => (

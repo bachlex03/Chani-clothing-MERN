@@ -44,7 +44,7 @@ const Login = () => {
 
          toast({
             variant: 'destructive',
-            title: `Account ${result.errorResponse?.message}`,
+            title: `${result.errorResponse?.message}`,
             description: `There was a problem with your request. ${result.errorResponse?.code}`,
          });
 

@@ -71,7 +71,6 @@ export default function CreateCategoryModel() {
       resolver: zodResolver(createCategorySchema),
       defaultValues: {
          name: '',
-         // isNotParent: false,
          parentId: '',
       },
    });
@@ -83,17 +82,17 @@ export default function CreateCategoryModel() {
    ) => {
       setLoading(true);
 
-      toast({
-         title: 'Create category payload',
-         className: 'dark:bg-green-500/60 text-white dark:text-white',
-         description: (
-            <pre className="mt-2 w-[340px] rounded-md dark:bg-green-800 p-4">
-               <code className="text-white">
-                  {JSON.stringify(data, null, 2)}
-               </code>
-            </pre>
-         ),
-      });
+      // toast({
+      //    title: 'Create category payload',
+      //    className: 'dark:bg-green-500/60 text-white dark:text-white',
+      //    description: (
+      //       <pre className="mt-2 w-[340px] rounded-md dark:bg-green-800 p-4">
+      //          <code className="text-white">
+      //             {JSON.stringify(data, null, 2)}
+      //          </code>
+      //       </pre>
+      //    ),
+      // });
 
       const payload: ICreateCategoryPayload = {
          name: data.name,
@@ -107,7 +106,7 @@ export default function CreateCategoryModel() {
          console.log(result.errorResponse);
 
          toast({
-            title: `Account ${result.errorResponse?.message}`,
+            title: `${result.errorResponse?.message}`,
             description: `There was a problem with your request. ${result.errorResponse?.code}`,
             variant: 'destructive',
          });
@@ -122,7 +121,7 @@ export default function CreateCategoryModel() {
       }, 500);
 
       toast({
-         title: 'Create category',
+         title: 'Created successfully',
          description: 'Category created successfully.',
          className: 'dark:bg-green-500/60 text-white dark:text-white',
       });
@@ -140,7 +139,7 @@ export default function CreateCategoryModel() {
 
             toast({
                variant: 'destructive',
-               title: `Account ${result.errorResponse?.message}`,
+               title: `${result.errorResponse?.message}`,
                description: `There was a problem with your request. ${result.errorResponse?.code}`,
             });
 

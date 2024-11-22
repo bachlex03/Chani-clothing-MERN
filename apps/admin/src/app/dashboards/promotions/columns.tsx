@@ -55,7 +55,9 @@ const deletePromotionSchema = z.object({
    id: z.string().min(1),
 });
 
-export const promotionColumns: ColumnDef<Promotion>[] = [
+export const promotionColumns = (
+   handleReload: () => void,
+): ColumnDef<Promotion>[] => [
    {
       accessorKey: '_id',
       header: 'ID',
@@ -106,19 +108,22 @@ export const promotionColumns: ColumnDef<Promotion>[] = [
    {
       accessorKey: 'is_active',
       header: () => <div className="text-center">Status</div>,
-      cell: ({ row }) => (
-         <div className="text-center capitalize">
-            <span
-               className={`text-xs px-2 py-1 rounded-lg text-center ${
-                  row.getValue('is_active')
-                     ? 'bg-green-500/50'
-                     : 'bg-red-500/50'
-               }`}
-            >
-               {row.getValue('is_active') ? 'Active' : 'Inactive'}
-            </span>
-         </div>
-      ),
+      cell: ({ row }) => {
+         const isExpired =
+            new Date(row.getValue('promotion_end_date')) < new Date();
+
+         return (
+            <div className="text-center capitalize">
+               <span
+                  className={`text-xs px-2 py-1 rounded-lg text-center ${
+                     !isExpired ? 'bg-green-500/50' : 'bg-red-500/50'
+                  }`}
+               >
+                  {!isExpired ? 'Active' : 'Expired'}
+               </span>
+            </div>
+         );
+      },
    },
    {
       id: 'actions',
@@ -142,17 +147,17 @@ export const promotionColumns: ColumnDef<Promotion>[] = [
          ) => {
             setLoading(true);
 
-            toast({
-               title: 'Delete Payload',
-               className: 'text-white dark:text-white',
-               description: (
-                  <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                     <code className="text-white">
-                        {JSON.stringify(data, null, 2)}
-                     </code>
-                  </pre>
-               ),
-            });
+            // toast({
+            //    title: 'Delete Payload',
+            //    className: 'text-white dark:text-white',
+            //    description: (
+            //       <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            //          <code className="text-white">
+            //             {JSON.stringify(data, null, 2)}
+            //          </code>
+            //       </pre>
+            //    ),
+            // });
 
             const result = await promotionServices.deletePromotion(data.id);
 
@@ -161,6 +166,7 @@ export const promotionColumns: ColumnDef<Promotion>[] = [
                return toast({
                   title: 'Delete Error',
                   description: result.message,
+                  variant: 'destructive',
                });
             }
 
@@ -168,19 +174,13 @@ export const promotionColumns: ColumnDef<Promotion>[] = [
             setLoading(false);
 
             toast({
-               title: 'Delete Success',
-               description: 'Promotion deleted successfully',
+               title: 'Deleted successfully',
+               description: 'Promotion deleted successfully.',
+               className: 'dark:bg-green-500/60 text-white dark:text-white',
             });
-         };
 
-         // const data: IUpdatePromotionPayload = {
-         //    id: row.getValue('_id'),
-         //    name: row.getValue('promotion_name'),
-         //    value: row.getValue('promotion_value'),
-         //    startDate: row.getValue('promotion_start_date'),
-         //    endDate: row.getValue('promotion_end_date'),
-         //    // categoryId: row.getValue('category_id'),
-         // };
+            handleReload();
+         };
 
          return (
             <div>
@@ -237,9 +237,10 @@ export const promotionColumns: ColumnDef<Promotion>[] = [
                         value={row.getValue('promotion_value')}
                         startDate={row.getValue('promotion_start_date')}
                         endDate={row.getValue('promotion_end_date')}
+                        // categoryId={row.getValue('category_id')}
+                        reloadFunction={handleReload}
                      />
-                  ) : // <ProductDialog />
-                  null}
+                  ) : null}
                   {dialog === Dialogs.dialog2 ? (
                      <DialogContent className="rounded-lg">
                         {loading && <Loading className="bg-five/50" />}

@@ -40,7 +40,7 @@ export const PromotionDataTable = () => {
 
    const table = useReactTable({
       data: promotions,
-      columns: promotionColumns,
+      columns: promotionColumns(getAllPromotions),
       getCoreRowModel: getCoreRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
@@ -52,32 +52,32 @@ export const PromotionDataTable = () => {
       },
    });
 
-   useEffect(() => {
-      async function getAllPromotions() {
-         const result = (await promotionServices.getAllPromotions()) as
-            | IGetAllPromotionsResponse[]
-            | ApiError
-            | null;
+   async function getAllPromotions() {
+      const result = (await promotionServices.getAllPromotions()) as
+         | IGetAllPromotionsResponse[]
+         | ApiError
+         | null;
 
-         if (result instanceof ApiError) {
-            console.log(result.errorResponse);
+      if (result instanceof ApiError) {
+         console.log(result.errorResponse);
 
-            toast({
-               variant: 'destructive',
-               title: `Account ${result.errorResponse?.message}`,
-               description: `There was a problem with your request. ${result.errorResponse?.code}`,
-            });
+         toast({
+            variant: 'destructive',
+            title: `${result.errorResponse?.message}`,
+            description: `There was a problem with your request. ${result.errorResponse?.code}`,
+         });
 
-            router.push('/auth/login');
+         router.push('/auth/login');
 
-            return;
-         }
-
-         if (result && 'data' in result) {
-            setPromotions(result.data as IGetAllPromotionsResponse[]);
-         }
+         return;
       }
 
+      if (result && 'data' in result) {
+         setPromotions(result.data as IGetAllPromotionsResponse[]);
+      }
+   }
+
+   useEffect(() => {
       getAllPromotions();
    }, []);
 

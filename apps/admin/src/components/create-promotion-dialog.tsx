@@ -51,7 +51,7 @@ export const CreatePromotionSchema = z.object({
    value: z
       .any()
       .refine((price) => Number(price) > 0, {
-         message: 'Discount rate must be at least 1.',
+         message: 'Discount rate must be greater than 0.',
       })
       .refine((price) => Number(price) <= 100, {
          message: 'Discount rate do not exceed 100',
@@ -59,11 +59,9 @@ export const CreatePromotionSchema = z.object({
       .transform((value) => Number(value)),
    startDate: z
       .date({
-         required_error: 'A date of birth is required.',
+         required_error: 'A date of start day is required.',
       })
       .transform((date) => {
-         console.log(date);
-
          const newDate = new Date(date);
 
          const isoFormatWithOffset = newDate
@@ -74,7 +72,7 @@ export const CreatePromotionSchema = z.object({
       }),
    endDate: z
       .date({
-         required_error: 'A date of birth is required.',
+         required_error: 'A date of end day is required.',
       })
       .transform((date) => {
          const newDate = new Date(date);
@@ -92,6 +90,7 @@ export const CreatePromotionSchema = z.object({
 
 export type PromotionProps = {
    categories: IGetAllCategoriesResponse[];
+   reloadFunction: () => void;
 };
 
 export default function CreatePromotionDialog(props: PromotionProps) {
@@ -115,7 +114,7 @@ export default function CreatePromotionDialog(props: PromotionProps) {
 
          toast({
             variant: 'destructive',
-            title: `Account ${result.errorResponse?.message}`,
+            title: `${result.errorResponse?.message}`,
             description: `There was a problem with your request. ${result.errorResponse?.code}`,
          });
 
@@ -125,20 +124,17 @@ export default function CreatePromotionDialog(props: PromotionProps) {
       }
 
       toast({
-         title: 'Login successful',
-         className: 'text-white dark:text-white',
-         description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-               <code className="text-white">
-                  {JSON.stringify(data, null, 2)}
-               </code>
-            </pre>
-         ),
+         title: 'Created successfully',
+         description: 'Promotion has been created successfully.',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
       });
 
       setTimeout(() => {
          setLoading(false);
       }, 500);
+
+      //reload browser
+      document.location.reload();
    };
 
    return (

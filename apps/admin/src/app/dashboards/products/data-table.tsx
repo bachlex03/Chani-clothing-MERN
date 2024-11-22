@@ -39,21 +39,6 @@ export const ProductDataTable = () => {
    const [pageIndex, setPageIndex] = useState(0);
    const [pageSize] = useState(5);
 
-   const table = useReactTable({
-      data: products,
-      columns: productColumns,
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      getFilteredRowModel: getFilteredRowModel(),
-      state: {
-         pagination: {
-            pageSize,
-            pageIndex,
-         },
-      },
-   });
-
    const getAllProducts = async () => {
       setLoading(true);
 
@@ -68,7 +53,7 @@ export const ProductDataTable = () => {
 
          toast({
             variant: 'destructive',
-            title: `Account ${result.errorResponse?.message}`,
+            title: `${result.errorResponse?.message}`,
             description: `There was a problem with your request. ${result.errorResponse?.code}`,
          });
 
@@ -89,6 +74,21 @@ export const ProductDataTable = () => {
    useEffect(() => {
       getAllProducts();
    }, []);
+
+   const table = useReactTable({
+      data: products,
+      columns: productColumns(getAllProducts),
+      getCoreRowModel: getCoreRowModel(),
+      getPaginationRowModel: getPaginationRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      getFilteredRowModel: getFilteredRowModel(),
+      state: {
+         pagination: {
+            pageSize,
+            pageIndex,
+         },
+      },
+   });
 
    return (
       <div className="w-full">
