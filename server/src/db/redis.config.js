@@ -39,6 +39,8 @@ const initRedis = () => {
 
   client.instanceRedis = instanceRedis;
 
+  console.log("instanceRedis", instanceRedis);
+
   handleEventConnection(instanceRedis);
 };
 

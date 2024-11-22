@@ -8,8 +8,6 @@ services:
       - 6379:6379
     volumes:
       - redis-data:/data
-    networks:
-      - app-network
 
   backend:
     container_name: chani-backend
@@ -18,20 +16,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3001:3001
+      # - 3002:3002 # Websocket port
     environment:
       - PORT=3001
       - NODE_ENV=development
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 3
     depends_on:
       - redis
+      # - mongodb
     expose:
       - 3001
-    networks:
-      - app-network
 
   fe-user:
     container_name: "chani-fe-user"
@@ -73,7 +66,3 @@ volumes:
   mongodb-data:
     name: mongodb-data
     driver: local
-
-networks:
-  app-network:
-    driver: bridge
