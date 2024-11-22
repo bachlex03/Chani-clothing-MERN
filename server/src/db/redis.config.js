@@ -31,7 +31,7 @@ const handleEventConnection = (redisClient) => {
 
 const initRedis = () => {
   const instanceRedis = redis.createClient({
-    host: "redis",
+    host: "127.0.0.1:6379",
     port: 6379,
   });
 
