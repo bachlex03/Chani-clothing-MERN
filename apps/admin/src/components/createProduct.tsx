@@ -196,16 +196,16 @@ export default function CreateProductAside() {
    async function onSubmit(data: z.infer<typeof FormSchema>) {
       setLoading(true);
 
-      toast({
-         title: 'You submitted the following values:',
-         description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-               <code className="text-white">
-                  {JSON.stringify(data, null, 2)}
-               </code>
-            </pre>
-         ),
-      });
+      // toast({
+      //    title: 'You submitted the following values:',
+      //    description: (
+      //       <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+      //          <code className="text-white">
+      //             {JSON.stringify(data, null, 2)}
+      //          </code>
+      //       </pre>
+      //    ),
+      // });
 
       const payload: ICreateProductPayload = {
          name: data.name,
@@ -241,16 +241,16 @@ export default function CreateProductAside() {
          });
       }
 
-      setTimeout(() => {
-         setLoading(false);
-      }, 500);
-
       toast({
-         title: 'Success',
-         description: 'Product has been created successfully.',
+         title: 'Created successfully',
+         description: 'Product created successfully.',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
       });
 
-      document.location.reload();
+      setTimeout(() => {
+         setLoading(false);
+         document.location.reload();
+      }, 500);
    }
 
    const reloadImages = async () => {

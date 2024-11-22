@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const request = axios.create({
+  // baseURL: 'localhost',
   baseURL: '/',
   headers: {
     // 'Content-Type': 'application/x-www-form-urlencoded',

@@ -199,16 +199,16 @@ export default function ProductDialog(props: ProductDialogProps) {
    async function onUpdate(data: z.infer<typeof FormSchema>) {
       setLoading(true);
 
-      toast({
-         title: 'You submitted the following values:',
-         description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-               <code className="text-white">
-                  {JSON.stringify(data, null, 2)}
-               </code>
-            </pre>
-         ),
-      });
+      // toast({
+      //    title: 'You submitted the following values:',
+      //    description: (
+      //       <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+      //          <code className="text-white">
+      //             {JSON.stringify(data, null, 2)}
+      //          </code>
+      //       </pre>
+      //    ),
+      // });
 
       const payload: IUpdateProductPayload = {
          name: data.name,
@@ -239,9 +239,9 @@ export default function ProductDialog(props: ProductDialogProps) {
       }, 500);
 
       toast({
-         title: 'Product updated successfully',
-         description: 'Product has been updated successfully.',
-         className: 'bg-green-300',
+         title: 'Updated successfully',
+         description: 'Product updated successfully.',
+         className: 'dark:bg-green-500/60 text-white dark:text-white',
       });
 
       props.reloadFunction();

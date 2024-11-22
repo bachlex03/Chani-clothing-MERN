@@ -147,17 +147,17 @@ export const productColumns = (
          const onDelete = async (data: z.infer<typeof deleteProductSchema>) => {
             setLoading(true);
 
-            toast({
-               title: 'Delete Payload',
-               className: 'text-white dark:text-white',
-               description: (
-                  <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                     <code className="text-white">
-                        {JSON.stringify(data, null, 2)}
-                     </code>
-                  </pre>
-               ),
-            });
+            // toast({
+            //    title: 'Delete Payload',
+            //    className: 'text-white dark:text-white',
+            //    description: (
+            //       <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            //          <code className="text-white">
+            //             {JSON.stringify(data, null, 2)}
+            //          </code>
+            //       </pre>
+            //    ),
+            // });
 
             const result = await productServices.removeProductById(data.id);
 
@@ -178,8 +178,9 @@ export const productColumns = (
             }, 500);
 
             toast({
-               title: 'Delete Success',
-               description: 'Promotion deleted successfully',
+               title: 'Deleted successfully',
+               description: 'Product deleted successfully.',
+               className: 'dark:bg-green-500/60 text-white dark:text-white',
             });
 
             getAllProducts();

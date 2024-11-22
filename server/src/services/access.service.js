@@ -67,11 +67,11 @@ class AccessService {
 
     const randomToken = Math.floor(100000 + Math.random() * 900000);
 
-    await sendEmail({
+    sendEmail({
       to: email,
       name: firstName,
       mailToken: randomToken,
-    }); 
+    });
 
     await RedisService.set(`${email}:token`, randomToken);
 

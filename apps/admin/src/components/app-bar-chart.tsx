@@ -81,29 +81,6 @@ const chartConfig = {
 
 export default function AppBarChart() {
    return (
-      // <ResponsiveContainer width={'100%'} height={350}>
-      //    <ChartContainer config={chartConfig}>
-      //       <BarChart data={data}>
-      //          <XAxis
-      //             dataKey={'name'}
-      //             axisLine={false}
-      //             tickLine={false}
-      //             tick={{ fill: '#9CA3AF' }}
-      //             stroke="#888888"
-      //             fontSize={12}
-      //          />
-      //          <YAxis
-      //             axisLine={false}
-      //             tickLine={false}
-      //             stroke="#888888"
-      //             fontSize={12}
-      //             tickFormatter={(value) => `$${value}`}
-      //          />
-      //          <Bar dataKey={'total'} radius={[4, 4, 0, 0]} />
-      //       </BarChart>
-      //    </ChartContainer>
-      // </ResponsiveContainer>
-
       <Card>
          <CardHeader>
             <CardTitle>Revenue by month</CardTitle>
