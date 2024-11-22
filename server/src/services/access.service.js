@@ -95,10 +95,12 @@ class AccessService {
     // Compare mailToken with token in redis
     const { email } = decodedToken;
 
-    const redisToken = RedisService.get(`${email}:token`);
+    const redisToken = await RedisService.get(`${email}:token`);
+
+    console.log("redisToken", redisToken);
 
     if (mailToken != redisToken) {
-      throw new BadRequestError("Something went wrong");
+      throw new BadRequestError("Token not match or expired");
     }
 
     const user = await findOneByEmail(email);
