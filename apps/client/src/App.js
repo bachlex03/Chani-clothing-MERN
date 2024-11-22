@@ -18,6 +18,8 @@ function App() {
             {publicRoutes.map((route, index) => {
               const Page = route.component;
 
+              // test
+
               let Layout = Default;
 
               if (route.layout) {
